@@ -17,7 +17,7 @@ var DOWNLOAD_DIR = path.join(__dirname, 'lib')
 var downloadUrl
   , fileName
 
-if (process.platform == 'linux' && proces.arch == 'x64') {
+if (process.platform == 'linux' && process.arch == 'x64') {
   downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.6.1-linux-x86_64-dynamic.tar.bz2'
 
 } else if (process.platform == 'linux') {
