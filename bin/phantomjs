@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Set prog to be the full path of the script that's running, including
+# following symlinks. Set progDir to be its directory. Set progName
+# to be its simple (file) name.
+origDir="${PWD}"
+prog="$0"
+while [ -h "${prog}" ]; do
+    newProg="$(/bin/ls -ld "${prog}")"
+    newProg="$(expr "x${newProg}" : 'x.* -> \(.*\)$')"
+    if expr "x${newProg}" : 'x/' > /dev/null; then
+        prog="${newProg}"
+    else
+        progDir="$(dirname "${prog}")"
+        prog="${progDir}/${newProg}"
+    fi
+done
+progDir="$(dirname "${prog}")"
+progName="$(basename "${prog}")"
+cd "${progDir}"
+progDir="${PWD}"
+prog="${progDir}/${progName}"
+cd "${origDir}"
+origDir=
+newProg=
+
+exec "${progDir}/../lib/phantom/bin/phantomjs" "$@"

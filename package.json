@@ -1,6 +1,6 @@
 {
   "name": "phantomjs",
-  "version": "0.0.2",
+  "version": "0.0.7",
   "keywords": ["phantomjs", "headless", "webkit", ""],
   "description": "Headless webkit with JS API",
   "homepage": "https://github.com/Obvious/phantomjs",
@@ -23,12 +23,11 @@
     "web": "http://pupius.co.uk/"
   } ],
   "bin": {
-    "phantom": "./bin/phantom"
+    "phantomjs": "./bin/phantomjs"
   },
   "engine": {
     "node": "*"
   },
-  "preferGlobal": true,
   "scripts": {
     "install": "node install.js"
   }
