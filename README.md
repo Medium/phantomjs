@@ -7,7 +7,7 @@ Building and Installing
 -----------------------
 
 ```shell
-npm install phantom
+npm install phantomjs
 ```
 
 Or grab the source and

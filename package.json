@@ -1,12 +1,12 @@
 {
-  "name": "phantom",
+  "name": "phantomjs",
   "version": "0.0.1",
   "keywords": ["phantomjs", "headless", "webkit", ""],
   "description": "Headless webkit with JS API",
-  "homepage": "https://github.com/Obvious/phantom",
+  "homepage": "https://github.com/Obvious/phantomjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Obvious/phantom.git"
+    "url": "https://github.com/Obvious/phantomjs.git"
   },
   "licenses": [ {
     "type": "Apache 2.0",
