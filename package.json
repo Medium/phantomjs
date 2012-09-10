@@ -1,0 +1,35 @@
+{
+  "name": "phantomjs",
+  "version": "0.0.2",
+  "keywords": ["phantomjs", "headless", "webkit", ""],
+  "description": "Headless webkit with JS API",
+  "homepage": "https://github.com/Obvious/phantomjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Obvious/phantomjs.git"
+  },
+  "licenses": [ {
+    "type": "Apache 2.0",
+    "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+  } ],
+  "author": {
+    "name": "Dan Pupius",
+    "email": "dan@obvious.com",
+    "url": "http://pupius.co.uk"
+  },
+  "maintainers": [ {
+    "name": "Dan Pupius",
+    "email": "dan@obvious.com",
+    "web": "http://pupius.co.uk/"
+  } ],
+  "bin": {
+    "phantom": "./bin/phantom"
+  },
+  "engine": {
+    "node": "*"
+  },
+  "preferGlobal": true,
+  "scripts": {
+    "install": "node install.js"
+  }
+}
