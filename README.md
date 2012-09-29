@@ -34,6 +34,21 @@ bin/phantom [phantom arguments]
 And npm will install a link to the binary in `node_modules/.bin` as
 it is wont to do.
 
+A Note on PhantomJS
+-------------------
+
+PhantomJS is not a library for NodeJS.  It's a separate environment and code
+written for node is unlikely to be compatible.  In particular PhantomJS does
+not expose a Common JS package loader.
+
+This is an _NPM wrapper_ and can be used to conveniently make Phantom available
+It is not a Node JS wrapper.
+
+I have had reasonable experiences writing standalone Phantom scripts which I
+then drive from within a node program by spawning phantom in a child process.
+
+Read the PhantomJS FAQ for more details: http://phantomjs.org/faq.html
+
 Contributing
 ------------
 
