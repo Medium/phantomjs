@@ -43,10 +43,21 @@ function mkdir(name) {
   }
 }
 
+function getOptions() {
+  if (process.env.http_proxy) {  
+    var options = url.parse(process.env.http_proxy);
+    options.path = downloadUrl;
+    options.headers = { Host: url.parse(downloadUrl).host };
+    return options;
+  } else {
+    return url.parse(downloadUrl);
+  }
+}
+
 function fetchIt() {
   mkdir(downloadedFile)
 
-  var client = http.get(url.parse(downloadUrl), onResponse)
+  var client = http.get(getOptions(), onResponse)
   var outFile = fs.openSync(downloadedFile, 'w')
   var notifiedCount = 0
   var count = 0
