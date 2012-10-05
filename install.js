@@ -45,12 +45,12 @@ function mkdir(name) {
 
 function getOptions() {
   if (process.env.http_proxy) {  
-    var options = url.parse(process.env.http_proxy);
-    options.path = downloadUrl;
-    options.headers = { Host: url.parse(downloadUrl).host };
-    return options;
+    var options = url.parse(process.env.http_proxy)
+    options.path = downloadUrl
+    options.headers = { Host: url.parse(downloadUrl).host }
+    return options
   } else {
-    return url.parse(downloadUrl);
+    return url.parse(downloadUrl)
   }
 }
 
