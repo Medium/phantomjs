@@ -73,7 +73,7 @@ function fetchIt() {
       response.addListener('end', onEnd)
   	} else {
       console.log('Error with http request', response.headers)
-      httpRequest.abort()
+      client.abort()
       process.exit(1)
     }
   }
