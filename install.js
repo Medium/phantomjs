@@ -18,13 +18,13 @@ var downloadUrl
   , fileName
 
 if (process.platform == 'linux' && process.arch == 'x64') {
-  downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.6.1-linux-x86_64-dynamic.tar.bz2'
+  downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux-x86_64.tar.bz2'
 
 } else if (process.platform == 'linux') {
-  downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.6.1-linux-i686-dynamic.tar.bz2'
+  downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux-i686.tar.bz2'
 
 } else if (process.platform == 'darwin') {
-  downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.6.1-macosx-static.zip'
+  downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.7.0-macosx.zip'
 
 } else {
   console.log('Unexpected platform or architecture:', process.platform, process.arch)
@@ -101,7 +101,7 @@ function extractIt() {
 
   if (fileName.substr(-4) == '.zip') {
     console.log('Extracting zip contents')
-    cp.execFile('unzip', [downloadedFile], options, finishIt)
+    cp.execFile('unzip', ['-u', downloadedFile], options, finishIt)
   } else {
     console.log('Extracting tar contents')
     cp.execFile('tar', ['jxf', downloadedFile], options, finishIt)
