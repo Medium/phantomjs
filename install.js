@@ -11,7 +11,7 @@ var fs = require('fs')
 var http = require('http')
 var path = require('path')
 var url = require('url')
-var AdmZip = require('adm-zip')
+var unzip = require('unzip')
 
 var DOWNLOAD_DIR = path.join(__dirname, 'lib')
 
@@ -105,9 +105,8 @@ function extractIt() {
 
   if (fileName.substr(-4) == '.zip') {
     console.log('Extracting zip contents')
-    var zip = new AdmZip(downloadedFile)
-    zip.extractAllTo(path.dirname(downloadedFile))
-    finishIt()
+    var unzipStream = unzip.Extract({ path: path.dirname(downloadedFile) })
+    fs.createReadStream(downloadedFile).pipe(unzipStream).on('end', finishIt)
   } else {
     console.log('Extracting tar contents')
     cp.execFile('tar', ['jxf', downloadedFile], options, finishIt)
