@@ -30,5 +30,8 @@
   },
   "scripts": {
     "install": "node install.js"
+  },
+  "dependencies": {
+    "adm-zip": "~0.1.7"
   }
 }
