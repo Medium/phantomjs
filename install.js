@@ -26,6 +26,9 @@ if (process.platform == 'linux' && process.arch == 'x64') {
 } else if (process.platform == 'darwin') {
   downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.7.0-macosx.zip'
 
+} else if (process.platform === 'win32') {
+  downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.7.0-windows.zip'
+
 } else {
   console.log('Unexpected platform or architecture:', process.platform, process.arch)
   process.exit(1)
