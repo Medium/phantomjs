@@ -1,27 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env node
 
-# Set prog to be the full path of the script that's running, including
-# following symlinks. Set progDir to be its directory. Set progName
-# to be its simple (file) name.
-origDir="${PWD}"
-prog="$0"
-while [ -h "${prog}" ]; do
-    newProg="$(/bin/ls -ld "${prog}")"
-    newProg="$(expr "x${newProg}" : 'x.* -> \(.*\)$')"
-    if expr "x${newProg}" : 'x/' > /dev/null; then
-        prog="${newProg}"
-    else
-        progDir="$(dirname "${prog}")"
-        prog="${progDir}/${newProg}"
-    fi
-done
-progDir="$(dirname "${prog}")"
-progName="$(basename "${prog}")"
-cd "${progDir}"
-progDir="${PWD}"
-prog="${progDir}/${progName}"
-cd "${origDir}"
-origDir=
-newProg=
+var path = require('path')
+var spawn = require('child_process').spawn
 
-exec "${progDir}/../lib/phantom/bin/phantomjs" "$@"
+var phantom = process.platform === 'win32' ?
+    path.resolve(__dirname, '../lib/phantom/phantomjs') :
+    path.resolve(__dirname, '../lib/phantom/bin/phantomjs')
+var args = process.argv.slice(2)
+
+// For Node 0.6 compatibility, pipe the streams manually, instead of using
+// `{ stdio: 'inherit' }`.
+var cp = spawn(phantom, args)
+cp.stdout.pipe(process.stdout)
+cp.stderr.pipe(process.stderr)
+cp.on('exit', process.exit)
