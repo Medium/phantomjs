@@ -20,9 +20,10 @@ What this is really doing is just grabbing a particular "blessed" (by
 this module) version of Phantom. As new versions of Phantom are released
 and vetted, this module will be updated accordingly.
 
-NOTE: Currently this has only been set up to fetch and run Phantom for MacOS
-(darwin) and Linux based platforms (as identified by nodejs).  If you want
-windows support, feel free to send a patch.
+The package has been set up to fetch and run Phantom for MacOS (darwin),
+Linux based platforms (as identified by nodejs), and -- as of version 0.2.0 --
+Windows (thanks to [Domenic Denicola](https://github.com/domenic)).  If you
+spot any platform weirdnesses, let us know or send a patch.
 
 Running
 -------
