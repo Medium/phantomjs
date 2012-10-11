@@ -1,12 +1,12 @@
 {
   "name": "phantomjs",
   "version": "0.1.0",
-  "keywords": ["phantomjs", "headless", "webkit", ""],
-  "description": "Headless webkit with JS API",
+  "keywords": ["phantomjs", "headless", "webkit"],
+  "description": "Headless WebKit with JS API",
   "homepage": "https://github.com/Obvious/phantomjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Obvious/phantomjs.git"
+    "url": "git://github.com/Obvious/phantomjs.git"
   },
   "licenses": [ {
     "type": "Apache 2.0",
@@ -24,9 +24,6 @@
   } ],
   "bin": {
     "phantomjs": "./bin/phantomjs"
-  },
-  "engine": {
-    "node": "*"
   },
   "scripts": {
     "install": "node install.js"
