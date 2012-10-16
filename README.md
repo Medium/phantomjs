@@ -53,8 +53,11 @@ Read the PhantomJS FAQ for more details: http://phantomjs.org/faq.html
 Contributing
 ------------
 
-Questions, comments, bug reports, and pull requests are all welcome.
-Submit them at [the project on GitHub](https://github.com/Obvious/phantom/).
+Questions, comments, bug reports, and pull requests are all welcome.  Submit them at
+[the project on GitHub](https://github.com/Obvious/phantomjs/).  If you haven't contributed to an
+[Obvious](http://github.com/Obvious/) project before please head over to the
+[Open Source Project](https://github.com/Obvious/open-source#note-to-external-contributors) and fill
+out an OCLA (it should be pretty painless).
 
 Bug reports that include steps-to-reproduce (including code) are the
 best. Even better, make them in the form of pull requests.
