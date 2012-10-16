@@ -3,14 +3,13 @@
 var path = require('path')
 var spawn = require('child_process').spawn
 
-var phantom = process.platform === 'win32' ?
-    path.resolve(__dirname, '../lib/phantom/phantomjs') :
-    path.resolve(__dirname, '../lib/phantom/bin/phantomjs')
+var binPath = require('../lib/phantomjs').path
+
 var args = process.argv.slice(2)
 
 // For Node 0.6 compatibility, pipe the streams manually, instead of using
 // `{ stdio: 'inherit' }`.
-var cp = spawn(phantom, args)
+var cp = spawn(binPath, args)
 cp.stdout.pipe(process.stdout)
 cp.stderr.pipe(process.stderr)
 cp.on('exit', process.exit)
