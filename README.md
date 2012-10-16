@@ -35,6 +35,30 @@ bin/phantom [phantom arguments]
 And npm will install a link to the binary in `node_modules/.bin` as
 it is wont to do.
 
+Running via node
+----------------
+
+The package exports a `path` string that contains the path to the
+phantomjs binary/executable.
+
+Below is an example of using this package via node.
+
+```javascript
+var childProcess = require('child_process')
+var phantomjs = require('phantomjs')
+var binPath = phantomjs.path
+
+var childArgs = [
+  path.join(__dirname, 'phantomjs-script.js'),
+  'some other argument (passed to phantomjs script)'
+]
+
+childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
+  // handle results
+})
+
+```
+
 A Note on PhantomJS
 -------------------
 
@@ -74,6 +98,6 @@ License
 
 Copyright 2012 [The Obvious Corporation](http://obvious.com/).
 
-Licensed under the Apache License, Version 2.0. 
+Licensed under the Apache License, Version 2.0.
 See the top-level file `LICENSE.txt` and
 (http://www.apache.org/licenses/LICENSE-2.0).
