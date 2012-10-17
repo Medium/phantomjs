@@ -11,11 +11,12 @@ var fs = require('fs')
 var http = require('http')
 var path = require('path')
 var url = require('url')
+var rimraf = require('rimraf').sync
 var unzip = require('unzip')
 
 fs.existsSync = fs.existsSync || path.existsSync
 
-var libPath = path.join(__dirname, 'lib')
+var libPath = path.join(__dirname, 'lib', 'phantom')
 var tmpPath = path.join(__dirname, 'tmp')
 
 var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.7.0-'
@@ -66,7 +67,7 @@ function finishIt(err, stdout, stderr) {
       var file = path.join(tmpPath, files[i])
       if (fs.statSync(file).isDirectory()) {
         console.log('Renaming extracted folder', files[i], ' -> phantom')
-        fs.renameSync(file, path.join(libPath, 'phantom'))
+        fs.renameSync(file, libPath)
         break
       }
     }
@@ -92,6 +93,9 @@ function extractIt() {
 function fetchIt() {
   var notifiedCount = 0
   var count = 0
+
+  rimraf(tmpPath)
+  rimraf(libPath)
 
   mkdir(downloadedFile)
 
