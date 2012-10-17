@@ -31,6 +31,7 @@
     "test": "nodeunit --reporter=minimal test/tests.js"
   },
   "dependencies": {
+    "rimraf": "~2.0.2",
     "unzip": "~0.0.4"
   },
   "devDependencies": {
