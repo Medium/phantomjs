@@ -101,7 +101,7 @@ function fetchIt() {
 
   var outFile = fs.openSync(downloadedFile, 'w')
 
-  var onData = function(data) {
+  function onData(data) {
     fs.writeSync(outFile, data, 0, data.length, null)
     count += data.length
     if ((count - notifiedCount) > 800000) {
@@ -110,13 +110,13 @@ function fetchIt() {
     }
   }
 
-  var onEnd = function() {
+  function onEnd() {
     console.log('Recieved ' + Math.floor(count / 1024) + 'K total.')
     fs.closeSync(outFile)
     extractIt()
   }
 
-  var onResponse = function(response) {
+  function onResponse(response) {
     var status = response.statusCode
     console.log('Receiving...')
 
