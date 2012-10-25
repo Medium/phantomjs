@@ -14,6 +14,8 @@ var url = require('url')
 var rimraf = require('rimraf').sync
 var unzip = require('unzip')
 
+var helper = require('./lib/phantomjs')
+
 fs.existsSync = fs.existsSync || path.existsSync
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
@@ -71,7 +73,18 @@ function finishIt(err, stdout, stderr) {
         break
       }
     }
-    console.log('Done')
+
+    // Check that the binary is user-executable and fix it if it isn't (problems with unzip library)
+    if (process.platform != 'win32') {
+      var stat = fs.statSync(helper.path)
+      // 64 == 0100 (no octal literal in strict mode)
+      if (!(stat.mode & 64)) {
+        console.log('Fixing file permissions')
+        fs.chmodSync(helper.path, '755')
+      }
+    }
+
+    console.log('Done. Phantomjs binary available at', helper.path)
   }
 }
 
