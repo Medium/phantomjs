@@ -13,3 +13,8 @@ var cp = spawn(binPath, args)
 cp.stdout.pipe(process.stdout)
 cp.stderr.pipe(process.stderr)
 cp.on('exit', process.exit)
+
+process.on('SIGTERM', function() {
+  cp.kill('SIGTERM')
+  process.exit(1)
+})
