@@ -108,10 +108,12 @@ function extractIt() {
     var unzipStream = unzip.Extract({ path: path.dirname(downloadedFile) })
     unzipStream.on('error', finishIt)
     unzipStream.on('end', finishIt)
+    unzipStream.on('close', function () { console.log('Zip stream closed')})
 
     var readStream = fs.createReadStream(downloadedFile)
     readStream.pipe(unzipStream)
     readStream.on('error', finishIt)
+    readStream.on('close', function () { console.log('Read stream closed')})
 
   } else {
     console.log('Extracting tar contents (via spawned process)')
