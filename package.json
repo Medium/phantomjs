@@ -1,6 +1,6 @@
 {
   "name": "phantomjs",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "keywords": ["phantomjs", "headless", "webkit"],
   "description": "Headless WebKit with JS API",
   "homepage": "https://github.com/Obvious/phantomjs",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "rimraf": "~2.0.2",
-    "unzip": "~0.0.4"
+    "unzip": "~0.1.0"
   },
   "devDependencies": {
     "nodeunit": "~0.7.4"

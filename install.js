@@ -107,8 +107,7 @@ function extractIt() {
 
     var unzipStream = unzip.Extract({ path: path.dirname(downloadedFile) })
     unzipStream.on('error', finishIt)
-    unzipStream.on('end', finishIt)
-    unzipStream.on('close', function () { console.log('Zip stream closed')})
+    unzipStream.on('close', finishIt)
 
     var readStream = fs.createReadStream(downloadedFile)
     readStream.pipe(unzipStream)
