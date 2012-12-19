@@ -60,18 +60,27 @@ function getOptions() {
 
 function finishIt(err, stdout, stderr) {
   if (err) {
-    console.log(err)
+    console.log('Error extracting archive', err)
     process.exit(1)
   } else {
     // Look for the extracted directory, so we can rename it.
     var files = fs.readdirSync(tmpPath)
+    var wasRenamed = false
     for (var i = 0; i < files.length; i++) {
       var file = path.join(tmpPath, files[i])
       if (fs.statSync(file).isDirectory()) {
         console.log('Renaming extracted folder', files[i], ' -> phantom')
         fs.renameSync(file, libPath)
+        wasRenamed = true
         break
       }
+    }
+
+    // For issolating extraction problems, https://github.com/Obvious/phantomjs/issues/15
+    if (!wasRenamed) {
+      console.log('Temporary files not renamed, maybe zip extraction failed.')
+      process.exit(1)
+      return
     }
 
     // Check that the binary is user-executable and fix it if it isn't (problems with unzip library)
@@ -95,8 +104,15 @@ function extractIt() {
 
   if (fileName.substr(-4) === '.zip') {
     console.log('Extracting zip contents')
+
     var unzipStream = unzip.Extract({ path: path.dirname(downloadedFile) })
-    fs.createReadStream(downloadedFile).pipe(unzipStream).on('end', finishIt)
+    unzipStream.on('error', finishIt)
+    unzipStream.on('end', finishIt)
+
+    var readStream = fs.createReadStream(downloadedFile)
+    readStream.pipe(unzipStream)
+    readStream.on('error', finishIt)
+
   } else {
     console.log('Extracting tar contents (via spawned process)')
     cp.execFile('tar', ['jxf', downloadedFile], options, finishIt)
