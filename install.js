@@ -20,7 +20,7 @@ fs.existsSync = fs.existsSync || path.existsSync
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
 var tmpPath = path.join(__dirname, 'tmp')
-var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.8.0-'
+var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.8.1-'
 var fileName
 
 if (process.platform === 'linux' && process.arch === 'x64') {
