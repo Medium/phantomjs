@@ -20,22 +20,17 @@ fs.existsSync = fs.existsSync || path.existsSync
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
 var tmpPath = path.join(__dirname, 'tmp')
-
-// PhantomJS only hosts the latest binaries, we'd like old packages to continue working while people
-// upgrade and as such Obvious are mirroring old versions in S3.
-var baseUrl = 'http://obvious.s3.amazonaws.com/mirrors/phantomjs/phantomjs-'
-var version = '1.8.1'
-var downloadUrl = baseUrl + version
+var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.8.1-'
 var fileName
 
 if (process.platform === 'linux' && process.arch === 'x64') {
-  downloadUrl += '-linux-x86_64.tar.bz2'
+  downloadUrl += 'linux-x86_64.tar.bz2'
 } else if (process.platform === 'linux') {
-  downloadUrl += '-linux-i686.tar.bz2'
+  downloadUrl += 'linux-i686.tar.bz2'
 } else if (process.platform === 'darwin') {
-  downloadUrl += '-macosx.zip'
+  downloadUrl += 'macosx.zip'
 } else if (process.platform === 'win32') {
-  downloadUrl += '-windows.zip'
+  downloadUrl += 'windows.zip'
 } else {
   console.log('Unexpected platform or architecture:', process.platform, process.arch)
   process.exit(1)

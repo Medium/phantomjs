@@ -68,12 +68,6 @@ with an additional build number that is used for revisions to the installer.
 As such `1.8.0-1` will `1.8.0-2` will both install PhantomJs 1.8 but the latter
 has newer changes to the installer.
 
-Prior to version 1.8.1 the binaries were downloaded from PhantomJS project
-hosting on Google Code, however, old binaries are no longer archived there so
-this NPM package would break whenever a new version was published. Since 1.8.1
-Obvious have been keeping a mirror on S3 which will ensure old NPM packages will
-continue to work.
-
 A Note on PhantomJS
 -------------------
 
