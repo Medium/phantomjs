@@ -12,7 +12,7 @@ var http = require('http')
 var path = require('path')
 var url = require('url')
 var rimraf = require('rimraf').sync
-var unzip = require('unzip')
+var admZip = require('adm-zip')
 
 var helper = require('./lib/phantomjs')
 
@@ -57,7 +57,7 @@ function getOptions() {
   }
 }
 
-function finishIt(err, stdout, stderr) {
+function finishIt(err) {
   if (err) {
     console.log('Error extracting archive', err)
     process.exit(1)
@@ -104,15 +104,17 @@ function extractIt() {
   if (fileName.substr(-4) === '.zip') {
     console.log('Extracting zip contents')
 
-    var unzipStream = unzip.Extract({ path: path.dirname(downloadedFile) })
-    unzipStream.on('error', finishIt)
-    unzipStream.on('close', finishIt)
+    // extract the zip file contents
+    var error;
+    try {
+      var zip = new admZip(downloadedFile);
+      zip.extractAllTo(path.dirname(downloadedFile), true)
+    } catch (err) {
+      error = err
+    }
 
-    var readStream = fs.createReadStream(downloadedFile)
-    readStream.pipe(unzipStream)
-    readStream.on('error', finishIt)
-    readStream.on('close', function () { console.log('Read stream closed')})
-
+    // handle the contents of the zip file (or the error that was thrown)
+    finishIt(error)
   } else {
     console.log('Extracting tar contents (via spawned process)')
     cp.execFile('tar', ['jxf', downloadedFile], options, finishIt)
