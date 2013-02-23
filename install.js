@@ -58,25 +58,31 @@ function getOptions() {
 }
 
 function finishIt(err, stdout, stderr) {
-  if (err) {
-    console.log('Error extracting archive', err)
-    process.exit(1)
-  } else {
-    // Look for the extracted directory, so we can rename it.
-    var files = fs.readdirSync(tmpPath)
-    var wasRenamed = false
-    for (var i = 0; i < files.length; i++) {
-      var file = path.join(tmpPath, files[i])
-      if (fs.statSync(file).isDirectory()) {
-        console.log('Renaming extracted folder', files[i], ' -> phantom')
-        fs.renameSync(file, libPath)
-        wasRenamed = true
-        break
+  // on Windows, A/V software can lock the directory, causing this
+  // to fail with an EPERM. Try again on failure, for up to 10 seconds.
+  // TODO Fix this by not unpacking into a temp directory, instead just
+  // renaming things on the way out of the tarball.
+  function moveIntoPlace (folder, unpackTarget, cb) {
+    var start = Date.now()
+    fs.rename(folder, unpackTarget, function retryCallback (er) {
+      if (er && process.platform === 'win32' && er.code === 'EPERM') {
+        if (Date.now() - start < 10000) {
+          return fs.rename(folder, unpackTarget, retryCallback)
+        } else {
+          console.log('File renaming is taking too long, probably due to anti-virus software locking up the files.')
+          console.log('Try re-running the installer and temporarily turning off the anti-virus software.')
+          process.exit(1)
+          return
+        }
       }
-    }
 
+      cb(er)
+    })
+  }
+
+  function afterRename(err) {
     // For issolating extraction problems, https://github.com/Obvious/phantomjs/issues/15
-    if (!wasRenamed) {
+    if (err) {
       console.log('Temporary files not renamed, maybe zip extraction failed.')
       process.exit(1)
       return
@@ -93,6 +99,21 @@ function finishIt(err, stdout, stderr) {
     }
 
     console.log('Done. Phantomjs binary available at', helper.path)
+  }
+
+  if (err) {
+    console.log('Error extracting archive', err)
+    process.exit(1)
+  } else {
+    // Look for the extracted directory, so we can rename it.
+    var files = fs.readdirSync(tmpPath)
+    for (var i = 0; i < files.length; i++) {
+      var file = path.join(tmpPath, files[i])
+      if (fs.statSync(file).isDirectory()) {
+        console.log('Renaming extracted folder', files[i], ' -> phantom')
+        moveIntoPlace(file, libPath, afterRename)
+      }
+    }
   }
 }
 
