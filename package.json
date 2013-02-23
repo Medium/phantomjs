@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "rimraf": "~2.0.2",
-    "unzip": "~0.1.0"
+    "adm-zip": "~0.1.9"
   },
   "devDependencies": {
     "nodeunit": "~0.7.4"
