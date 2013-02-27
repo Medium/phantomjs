@@ -134,13 +134,13 @@ function fetchIt() {
     fs.writeSync(outFile, data, 0, data.length, null)
     count += data.length
     if ((count - notifiedCount) > 800000) {
-      console.log('Recieved ' + Math.floor(count / 1024) + 'K...')
+      console.log('Received ' + Math.floor(count / 1024) + 'K...')
       notifiedCount = count
     }
   }
 
   function onEnd() {
-    console.log('Recieved ' + Math.floor(count / 1024) + 'K total.')
+    console.log('Received ' + Math.floor(count / 1024) + 'K total.')
     fs.closeSync(outFile)
     extractIt()
   }
