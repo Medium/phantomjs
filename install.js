@@ -51,6 +51,13 @@ function getOptions() {
     var options = url.parse(process.env.http_proxy)
     options.path = downloadUrl
     options.headers = { Host: url.parse(downloadUrl).host }
+    // turn basic authorization into proxy-authorization
+    if (options.auth) { 
+      options.headers['Proxy-Authorization'] = 'Basic ' +
+              new Buffer(options.auth).toString('base64')
+      delete options.auth
+    }
+
     return options
   } else {
     return url.parse(downloadUrl)
