@@ -20,7 +20,7 @@ fs.existsSync = fs.existsSync || path.existsSync
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
 var tmpPath = path.join(__dirname, 'tmp')
-var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.8.2-'
+var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.9.0-'
 var fileName
 
 if (process.platform === 'linux' && process.arch === 'x64') {
@@ -52,7 +52,7 @@ function getOptions() {
     options.path = downloadUrl
     options.headers = { Host: url.parse(downloadUrl).host }
     // turn basic authorization into proxy-authorization
-    if (options.auth) { 
+    if (options.auth) {
       options.headers['Proxy-Authorization'] = 'Basic ' +
               new Buffer(options.auth).toString('base64')
       delete options.auth
