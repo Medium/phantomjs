@@ -12,7 +12,7 @@ var http = require('http')
 var path = require('path')
 var url = require('url')
 var rimraf = require('rimraf').sync
-var unzip = require('unzip')
+var AdmZip = require('adm-zip')
 
 var helper = require('./lib/phantomjs')
 
@@ -132,14 +132,13 @@ function extractIt() {
   if (fileName.substr(-4) === '.zip') {
     console.log('Extracting zip contents')
 
-    var unzipStream = unzip.Extract({ path: path.dirname(downloadedFile) })
-    unzipStream.on('error', finishIt)
-    unzipStream.on('close', finishIt)
-
-    var readStream = fs.createReadStream(downloadedFile)
-    readStream.pipe(unzipStream)
-    readStream.on('error', finishIt)
-    readStream.on('close', function () { console.log('Read stream closed')})
+    try {
+      var zip = new AdmZip(downloadedFile)
+      zip.extractAllTo(path.dirname(downloadedFile), true)
+      finishIt()
+    } catch (e) {
+      finishIt(e)
+    }
 
   } else {
     console.log('Extracting tar contents (via spawned process)')
