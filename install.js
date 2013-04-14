@@ -13,14 +13,12 @@ var path = require('path')
 var url = require('url')
 var rimraf = require('rimraf').sync
 var AdmZip = require('adm-zip')
-
 var helper = require('./lib/phantomjs')
 
-fs.existsSync = fs.existsSync || path.existsSync
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
 var tmpPath = path.join(__dirname, 'tmp')
-var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-1.9.0-'
+var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-' + helper.version + '-'
 var fileName
 
 if (process.platform === 'linux' && process.arch === 'x64') {
@@ -38,6 +36,10 @@ if (process.platform === 'linux' && process.arch === 'x64') {
 
 var fileName = downloadUrl.split('/').pop()
 var downloadedFile = path.join(tmpPath, fileName)
+
+// Start the install.
+fetchIt()
+
 
 function mkdir(name) {
   var dir = path.dirname(name)
@@ -94,6 +96,9 @@ function finishIt(err, stdout, stderr) {
       process.exit(1)
       return
     }
+
+    // Delete the temporary files.
+    rimraf(tmpPath)
 
     // Check that the binary is user-executable and fix it if it isn't (problems with unzip library)
     if (process.platform != 'win32') {
@@ -190,5 +195,3 @@ function fetchIt() {
 
   console.log('Requesting ' + downloadedFile)
 }
-
-fetchIt()
