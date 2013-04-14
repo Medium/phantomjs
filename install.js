@@ -17,7 +17,7 @@ var helper = require('./lib/phantomjs')
 
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
-var tmpPath = path.join(__dirname, 'tmp')
+var tmpPath = process.env.TMPDIR ? path.join(process.env.TMPDIR, 'phantomjs') : path.join(__dirname, 'tmp')
 var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-' + helper.version + '-'
 var fileName
 
@@ -38,7 +38,13 @@ var fileName = downloadUrl.split('/').pop()
 var downloadedFile = path.join(tmpPath, fileName)
 
 // Start the install.
-fetchIt()
+if (fs.existsSync(downloadedFile)) {
+  console.log('Download already available in tmpdir')
+  console.log(downloadedFile)
+  extractIt()
+} else {
+  fetchIt()
+}
 
 
 function mkdir(name) {
@@ -96,9 +102,6 @@ function finishIt(err, stdout, stderr) {
       process.exit(1)
       return
     }
-
-    // Delete the temporary files.
-    rimraf(tmpPath)
 
     // Check that the binary is user-executable and fix it if it isn't (problems with unzip library)
     if (process.platform != 'win32') {
