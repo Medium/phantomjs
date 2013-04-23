@@ -133,9 +133,9 @@ function finishIt(err, stdout, stderr) {
 }
 
 function extractIt() {
-  var options = {
-    cwd: tmpPath
-  }
+  var options = {cwd: tmpPath}
+
+  rimraf(libPath)
 
   if (fileName.substr(-4) === '.zip') {
     console.log('Extracting zip contents')
@@ -159,7 +159,6 @@ function fetchIt() {
   var count = 0
 
   rimraf(tmpPath)
-  rimraf(libPath)
 
   mkdir(downloadedFile)
 

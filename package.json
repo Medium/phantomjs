@@ -1,6 +1,6 @@
 {
   "name": "phantomjs",
-  "version": "1.9.0-2",
+  "version": "1.9.0-3",
   "keywords": ["phantomjs", "headless", "webkit"],
   "description": "Headless WebKit with JS API",
   "homepage": "https://github.com/Obvious/phantomjs",
