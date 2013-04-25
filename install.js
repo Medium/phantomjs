@@ -14,7 +14,7 @@ var url = require('url')
 var rimraf = require('rimraf').sync
 var AdmZip = require('adm-zip')
 var helper = require('./lib/phantomjs')
-
+var ncp = require('ncp')
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
 var tmpPath = process.env.TMPDIR ? path.join(process.env.TMPDIR, 'phantomjs') : path.join(__dirname, 'tmp')
@@ -79,20 +79,21 @@ function finishIt(err, stdout, stderr) {
   // renaming things on the way out of the tarball.
   function moveIntoPlace (folder, unpackTarget, cb) {
     var start = Date.now()
-    fs.rename(folder, unpackTarget, function retryCallback (er) {
+    ncp(folder, unpackTarget, function retryCallback (er) {
       if (er && process.platform === 'win32' && er.code === 'EPERM') {
-        if (Date.now() - start < 10000) {
-          return fs.rename(folder, unpackTarget, retryCallback)
-        } else {
+        if (Date.now() - start > 10000)  {
           console.log('File renaming is taking too long, probably due to anti-virus software locking up the files.')
           console.log('Try re-running the installer and temporarily turning off the anti-virus software.')
           process.exit(1)
           return
         }
       }
-
       cb(er)
-    })
+    }
+
+
+    );
+  
   }
 
   function afterRename(err) {
