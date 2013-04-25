@@ -89,11 +89,7 @@ function finishIt(err, stdout, stderr) {
         }
       }
       cb(er)
-    }
-
-
-    );
-  
+    });
   }
 
   function afterRename(err) {
