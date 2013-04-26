@@ -79,10 +79,7 @@ function finishIt(err, stdout, stderr) {
     ncp(folder, unpackTarget, function (er) {
       if (er ) {
         console.log('File copy failed.')
-        if (Date.now() - start > 10000)  {
-          console.log('File renaming is taking too long, probably due to anti-virus software locking up the files.')
-          console.log('Try re-running the installer and temporarily turning off the anti-virus software.')
-        } 
+        console.error(err);
         process.exit(1)
         return;
       }
