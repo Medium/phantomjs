@@ -73,20 +73,18 @@ function getOptions() {
 }
 
 function finishIt(err, stdout, stderr) {
-  // on Windows, A/V software can lock the directory, causing this
-  // to fail with an EPERM. Try again on failure, for up to 10 seconds.
-  // TODO Fix this by not unpacking into a temp directory, instead just
-  // renaming things on the way out of the tarball.
-  function moveIntoPlace (folder, unpackTarget, cb) {
+  // copy phantomjs folder to lib folder 
+  function copyIntoPlace (folder, unpackTarget, cb) {
     var start = Date.now()
-    ncp(folder, unpackTarget, function retryCallback (er) {
-      if (er && process.platform === 'win32' && er.code === 'EPERM') {
+    ncp(folder, unpackTarget, function (er) {
+      if (er ) {
+        console.log('File copy failed.')
         if (Date.now() - start > 10000)  {
           console.log('File renaming is taking too long, probably due to anti-virus software locking up the files.')
           console.log('Try re-running the installer and temporarily turning off the anti-virus software.')
-          process.exit(1)
-          return
-        }
+        } 
+        process.exit(1)
+        return;
       }
       cb(er)
     });
@@ -123,7 +121,7 @@ function finishIt(err, stdout, stderr) {
       var file = path.join(tmpPath, files[i])
       if (fs.statSync(file).isDirectory()) {
         console.log('Renaming extracted folder', files[i], ' -> phantom')
-        moveIntoPlace(file, libPath, afterRename)
+        copyIntoPlace(file, libPath, afterRename)
       }
     }
   }
