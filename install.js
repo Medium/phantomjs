@@ -15,6 +15,7 @@ var rimraf = require('rimraf').sync
 var AdmZip = require('adm-zip')
 var helper = require('./lib/phantomjs')
 var ncp = require('ncp')
+var npmconf = require('npmconf')
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
 var tmpPath = process.env.TMPDIR ? path.join(process.env.TMPDIR, 'phantomjs') : path.join(__dirname, 'tmp')
@@ -54,9 +55,9 @@ function mkdir(name) {
   }
 }
 
-function getOptions() {
-  if (process.env.http_proxy) {
-    var options = url.parse(process.env.http_proxy)
+function getOptions(proxyUrl) {
+  if (proxyUrl) {
+    var options = url.parse(proxyUrl)
     options.path = downloadUrl
     options.headers = { Host: url.parse(downloadUrl).host }
     // turn basic authorization into proxy-authorization
@@ -185,7 +186,10 @@ function fetchIt() {
     }
   }
 
-  var client = http.get(getOptions(), onResponse)
+  npmconf.load(function(er, conf) {
+    var proxyUrl = conf.get('proxy')
+    var client = http.get(getOptions(proxyUrl), onResponse)
+  })
 
   console.log('Requesting ' + downloadedFile)
 }

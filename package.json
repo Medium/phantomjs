@@ -33,7 +33,8 @@
   "dependencies": {
     "rimraf": "~2.0.2",
     "adm-zip": "0.2.1",
-    "ncp":"0.4.2"
+    "ncp": "0.4.2",
+    "npmconf": "0.0.24"
   },
   "devDependencies": {
     "nodeunit": "~0.7.4"
