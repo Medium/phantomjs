@@ -15,6 +15,7 @@ var rimraf = require('rimraf').sync
 var AdmZip = require('adm-zip')
 var helper = require('./lib/phantomjs')
 var ncp = require('ncp')
+var npmconf = require('npmconf')
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
 var tmpPath = process.env.TMPDIR ? path.join(process.env.TMPDIR, 'phantomjs') : path.join(__dirname, 'tmp')
@@ -54,9 +55,9 @@ function mkdir(name) {
   }
 }
 
-function getOptions() {
-  if (process.env.http_proxy) {
-    var options = url.parse(process.env.http_proxy)
+function getOptions(proxyUrl) {
+  if (proxyUrl) {
+    var options = url.parse(proxyUrl)
     options.path = downloadUrl
     options.headers = { Host: url.parse(downloadUrl).host }
     // turn basic authorization into proxy-authorization
@@ -77,7 +78,7 @@ function finishIt(err, stdout, stderr) {
   function copyIntoPlace (folder, unpackTarget, cb) {
     var start = Date.now()
     ncp(folder, unpackTarget, function (er) {
-      if (er ) {
+      if (er) {
         console.log('File copy failed.')
         console.error(err);
         process.exit(1)
@@ -88,7 +89,7 @@ function finishIt(err, stdout, stderr) {
   }
 
   function afterRename(err) {
-    // For issolating extraction problems, https://github.com/Obvious/phantomjs/issues/15
+    // For isolating extraction problems, https://github.com/Obvious/phantomjs/issues/15
     if (err) {
       console.log('Temporary files not renamed, maybe zip extraction failed.')
       process.exit(1)
@@ -185,7 +186,17 @@ function fetchIt() {
     }
   }
 
-  var client = http.get(getOptions(), onResponse)
+  npmconf.load(function(err, conf) {
+    if (err) {
+        console.log('Error loading npm config')
+        console.error(err)
+        process.exit(1)
+        return
+    }
 
-  console.log('Requesting ' + downloadedFile)
+    var proxyUrl = conf.get('proxy')
+    var client = http.get(getOptions(proxyUrl), onResponse)
+
+    console.log('Requesting ' + downloadedFile)
+  })
 }
