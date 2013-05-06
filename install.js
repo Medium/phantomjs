@@ -78,7 +78,7 @@ function finishIt(err, stdout, stderr) {
   function copyIntoPlace (folder, unpackTarget, cb) {
     var start = Date.now()
     ncp(folder, unpackTarget, function (er) {
-      if (er ) {
+      if (er) {
         console.log('File copy failed.')
         console.error(err);
         process.exit(1)
@@ -89,7 +89,7 @@ function finishIt(err, stdout, stderr) {
   }
 
   function afterRename(err) {
-    // For issolating extraction problems, https://github.com/Obvious/phantomjs/issues/15
+    // For isolating extraction problems, https://github.com/Obvious/phantomjs/issues/15
     if (err) {
       console.log('Temporary files not renamed, maybe zip extraction failed.')
       process.exit(1)
@@ -186,10 +186,17 @@ function fetchIt() {
     }
   }
 
-  npmconf.load(function(er, conf) {
+  npmconf.load(function(err, conf) {
+    if (err) {
+        console.log('Error loading npm config')
+        console.error(err)
+        process.exit(1)
+        return
+    }
+
     var proxyUrl = conf.get('proxy')
     var client = http.get(getOptions(proxyUrl), onResponse)
-  })
 
-  console.log('Requesting ' + downloadedFile)
+    console.log('Requesting ' + downloadedFile)
+  })
 }
