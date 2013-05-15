@@ -197,6 +197,7 @@ function fetchIt() {
     var proxyUrl = conf.get('proxy')
     var client = http.get(getOptions(proxyUrl), onResponse)
 
-    console.log('Requesting ' + downloadedFile)
+    console.log('Downlaoading', downloadUrl)
+    console.log('Saving to', downloadedFile)
   })
 }
