@@ -151,7 +151,7 @@ function extractDownload(filePath, tmpPath) {
       var zip = new AdmZip(filePath)
       zip.extractAllTo(path.dirname(filePath), true)
       deferred.resolve(true)
-    } catch (e) {
+    } catch (err) {
       deferred.reject('Error extracting archive ' + err.stack)
     }
 
