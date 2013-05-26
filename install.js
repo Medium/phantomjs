@@ -55,7 +55,7 @@ npmconf.load(function(err, conf) {
     promise = promise.then(function () {
       rimraf(tmpPath)
       mkdir(downloadedFile)
-      console.log('Downlaoading', downloadUrl)
+      console.log('Downloading', downloadUrl)
       console.log('Saving to', downloadedFile)
       return requestBinary(getRequestOptions(conf.get('proxy')), downloadedFile)
     })
