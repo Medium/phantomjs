@@ -35,6 +35,7 @@
     "kew": "~0.1.7",
     "ncp": "0.4.2",
     "npmconf": "0.0.24",
+    "mkdirp": "0.3.5",
     "rimraf": "~2.0.2"
   },
   "devDependencies": {
