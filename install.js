@@ -46,16 +46,13 @@ npmconf.load(function(err, conf) {
     return
   }
 
-  var tmpPath = path.join(conf.get('tmp'), 'phantomjs')
+  var tmpPath = findSuitableTempDirectory(conf)
   var downloadedFile = path.join(tmpPath, fileName)
-
   var promise = kew.resolve(true)
 
   // Start the install.
   if (!fs.existsSync(downloadedFile)) {
     promise = promise.then(function () {
-      rimraf(tmpPath)
-      mkdirp.sync(tmpPath, '0777')
       console.log('Downloading', downloadUrl)
       console.log('Saving to', downloadedFile)
       return requestBinary(getRequestOptions(conf.get('proxy')), downloadedFile)
@@ -82,6 +79,35 @@ npmconf.load(function(err, conf) {
     process.exit(1)
   })
 })
+
+
+function findSuitableTempDirectory(npmConf) {
+  var now = Date.now()
+  var candidateTmpDirs = [
+    process.env.TMPDIR || '/tmp',
+    npmConf.get('tmp'),
+    path.join(process.cwd(), 'tmp')
+  ]
+
+  for (var i = 0; i < candidateTmpDirs.length; i++) {
+    var candidatePath = path.join(candidateTmpDirs[i], 'phantomjs')
+
+    try {
+      mkdirp.sync(candidatePath, '0777')
+      var testFile = path.join(candidatePath, now + '.tmp')
+      fs.writeFileSync(testFile, 'test')
+      fs.unlinkSync(testFile)
+      return candidatePath
+    } catch (e) {
+      console.log(candidatePath, 'is not writable:', e.message)
+    }
+  }
+
+  console.error('Can not find a writable tmp directory, please report issue ' +
+      'on https://github.com/Obvious/phantomjs/issues/59 with as much ' +
+      'information as possible.')
+  process.exit(1)
+}
 
 
 function getRequestOptions(proxyUrl) {
