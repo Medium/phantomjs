@@ -18,31 +18,32 @@ var mkdirp = require('mkdirp')
 var path = require('path')
 var rimraf = require('rimraf').sync
 var url = require('url')
+var which = require('which')
 
 var libPath = path.join(__dirname, 'lib', 'phantom')
 var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-' + helper.version + '-'
 
 // let's first check whether PhantomJS is already installed..
-cp.execFile('which', ['phantomjs'], {}, function (err, stdout, stderr) {
+which('phantomjs', function(err, path) {
+  // if it's installed - exit without installing
   if (err === null) {
     console.log('PhantomJS is already installed')
     process.exit();
-  } else {
-
-    if (process.platform === 'linux' && process.arch === 'x64') {
-      downloadUrl += 'linux-x86_64.tar.bz2'
-    } else if (process.platform === 'linux') {
-      downloadUrl += 'linux-i686.tar.bz2'
-    } else if (process.platform === 'darwin') {
-      downloadUrl += 'macosx.zip'
-    } else if (process.platform === 'win32') {
-      downloadUrl += 'windows.zip'
-    } else {
-      console.log('Unexpected platform or architecture:', process.platform, process.arch)
-      process.exit(1)
-    }
-
   }
+
+  if (process.platform === 'linux' && process.arch === 'x64') {
+    downloadUrl += 'linux-x86_64.tar.bz2'
+  } else if (process.platform === 'linux') {
+    downloadUrl += 'linux-i686.tar.bz2'
+  } else if (process.platform === 'darwin') {
+    downloadUrl += 'macosx.zip'
+  } else if (process.platform === 'win32') {
+    downloadUrl += 'windows.zip'
+  } else {
+    console.log('Unexpected platform or architecture:', process.platform, process.arch)
+    process.exit(1)
+  }
+
 })
 
 
