@@ -24,78 +24,74 @@ var libPath = path.join(__dirname, 'lib', 'phantom')
 var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-' + helper.version + '-'
 
 // let's first check whether PhantomJS is already installed..
-var deferred = kew.defer()
-which('phantomjs', deferred.makeNodeResolver());
-deferred.promise
-  // PhantomJS is installed - exit
-  .then(function() {
+which('phantomjs', function(err, path) {
+  // if it's installed - exit without installing
+  if (err === null) {
     console.log('PhantomJS is already installed')
     process.exit();
-  })
+  }
 
-  // couldn't find PhantomJS binary - continue the installation
-  .fail(function() {
-    if (process.platform === 'linux' && process.arch === 'x64') {
-      downloadUrl += 'linux-x86_64.tar.bz2'
-    } else if (process.platform === 'linux') {
-      downloadUrl += 'linux-i686.tar.bz2'
-    } else if (process.platform === 'darwin') {
-      downloadUrl += 'macosx.zip'
-    } else if (process.platform === 'win32') {
-      downloadUrl += 'windows.zip'
-    } else {
-      console.log('Unexpected platform or architecture:', process.platform, process.arch)
-      process.exit(1)
-    }
+  if (process.platform === 'linux' && process.arch === 'x64') {
+    downloadUrl += 'linux-x86_64.tar.bz2'
+  } else if (process.platform === 'linux') {
+    downloadUrl += 'linux-i686.tar.bz2'
+  } else if (process.platform === 'darwin') {
+    downloadUrl += 'macosx.zip'
+  } else if (process.platform === 'win32') {
+    downloadUrl += 'windows.zip'
+  } else {
+    console.log('Unexpected platform or architecture:', process.platform, process.arch)
+    process.exit(1)
+  }
 
-
-
-    var fileName = downloadUrl.split('/').pop()
+})
 
 
-    npmconf.load(function(err, conf) {
-      if (err) {
-        console.log('Error loading npm config')
-        console.error(err)
-        process.exit(1)
-        return
-      }
 
-      var tmpPath = findSuitableTempDirectory(conf)
-      var downloadedFile = path.join(tmpPath, fileName)
-      var promise = kew.resolve(true)
+var fileName = downloadUrl.split('/').pop()
 
-      // Start the install.
-      if (!fs.existsSync(downloadedFile)) {
-        promise = promise.then(function () {
-          console.log('Downloading', downloadUrl)
-          console.log('Saving to', downloadedFile)
-          return requestBinary(getRequestOptions(conf.get('proxy')), downloadedFile)
-        })
 
-      } else {
-        console.log('Download already available at', downloadedFile)
-      }
+npmconf.load(function(err, conf) {
+  if (err) {
+    console.log('Error loading npm config')
+    console.error(err)
+    process.exit(1)
+    return
+  }
 
-      promise.then(function () {
-        return extractDownload(downloadedFile, tmpPath)
-      })
-      .then(function () {
-        return copyIntoPlace(tmpPath, libPath)
-      })
-      .then(function () {
-        return fixFilePermissions()
-      })
-      .then(function () {
-        console.log('Done. Phantomjs binary available at', helper.path)
-      })
-      .fail(function (err) {
-        console.error('Phantom installation failed', err.stack)
-        process.exit(1)
-      })
+  var tmpPath = findSuitableTempDirectory(conf)
+  var downloadedFile = path.join(tmpPath, fileName)
+  var promise = kew.resolve(true)
+
+  // Start the install.
+  if (!fs.existsSync(downloadedFile)) {
+    promise = promise.then(function () {
+      console.log('Downloading', downloadUrl)
+      console.log('Saving to', downloadedFile)
+      return requestBinary(getRequestOptions(conf.get('proxy')), downloadedFile)
     })
 
+  } else {
+    console.log('Download already available at', downloadedFile)
+  }
+
+  promise.then(function () {
+    return extractDownload(downloadedFile, tmpPath)
   })
+  .then(function () {
+    return copyIntoPlace(tmpPath, libPath)
+  })
+  .then(function () {
+    return fixFilePermissions()
+  })
+  .then(function () {
+    console.log('Done. Phantomjs binary available at', helper.path)
+  })
+  .fail(function (err) {
+    console.error('Phantom installation failed', err.stack)
+    process.exit(1)
+  })
+})
 
 
 function findSuitableTempDirectory(npmConf) {
