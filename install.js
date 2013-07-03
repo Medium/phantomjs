@@ -23,17 +23,24 @@ var which = require('which')
 var libPath = path.join(__dirname, 'lib', 'phantom')
 var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-' + helper.version + '-'
 
-// let's first check whether PhantomJS is already installed..
+var originalPath = process.env.PATH
+
+// NPM adds bin directories to the path, which will cause `which` to find the
+// bin for this package not the actual phantomjs bin.
+process.env.PATH = originalPath.replace(/:[^:]*node_modules[^:]*/g, '')
+
+// First check whether PhantomJS is already installed.
 var deferred = kew.defer()
 which('phantomjs', deferred.makeNodeResolver());
 deferred.promise
-  // PhantomJS is installed - exit
-  .then(function() {
-    console.log('PhantomJS is already installed. Using system binary')
-    process.exit();
+
+  // There's a local copy of phantom we can use.
+  .then(function(path) {
+    console.log('PhantomJS is already installed at', path + '.')
+    exit()
   })
 
-  // couldn't find PhantomJS binary - continue the installation
+  // PhantomJS isn't installed globally, so we need to go fetch and install it.
   .fail(function() {
     if (process.platform === 'linux' && process.arch === 'x64') {
       downloadUrl += 'linux-x86_64.tar.bz2'
@@ -45,19 +52,16 @@ deferred.promise
       downloadUrl += 'windows.zip'
     } else {
       console.log('Unexpected platform or architecture:', process.platform, process.arch)
-      process.exit(1)
+      exit(1)
     }
 
-
-
     var fileName = downloadUrl.split('/').pop()
-
 
     npmconf.load(function(err, conf) {
       if (err) {
         console.log('Error loading npm config')
         console.error(err)
-        process.exit(1)
+        exit(1)
         return
       }
 
@@ -91,11 +95,17 @@ deferred.promise
       })
       .fail(function (err) {
         console.error('Phantom installation failed', err.stack)
-        process.exit(1)
+        exit(1)
       })
     })
 
   })
+
+
+function exit(code) {
+  process.env.PATH = originalPath
+  process.exit(code || 0)
+}
 
 
 function findSuitableTempDirectory(npmConf) {
@@ -123,7 +133,7 @@ function findSuitableTempDirectory(npmConf) {
   console.error('Can not find a writable tmp directory, please report issue ' +
       'on https://github.com/Obvious/phantomjs/issues/59 with as much ' +
       'information as possible.')
-  process.exit(1)
+  exit(1)
 }
 
 
