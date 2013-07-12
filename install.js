@@ -35,8 +35,8 @@ which('phantomjs', deferred.makeNodeResolver());
 deferred.promise
 
   // There's a local copy of phantom we can use.
-  .then(function(path) {
-    console.log('PhantomJS is already installed at', path + '.')
+  .then(function() {
+    console.log('PhantomJS is already installed at', arguments[1] + '.')
     exit()
   })
 
