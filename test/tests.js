@@ -1,6 +1,7 @@
 // Nodeunit-based Functionality Tests
 // tests require an active internet connection
 var childProcess = require('child_process')
+var execSync = require('exec-sync')
 var fs = require('fs')
 var path = require('path')
 
@@ -33,5 +34,18 @@ module.exports = {
 
       test.done()
     })
+  },
+  testExecSync: function(test) {
+    test.expect(1)
+
+    var childArgs = [
+      path.join(__dirname, 'loadspeed.js'),
+      'http://www.google.com/'
+    ]
+
+    var value = execSync([binPath].concat(childArgs).join(" "))
+    test.ok(value, 'should execute and return time to load page')
+
+    test.done()
   }
 }
