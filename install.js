@@ -142,6 +142,8 @@ function getRequestOptions(proxyUrl) {
     var options = url.parse(proxyUrl)
     options.path = downloadUrl
     options.headers = { Host: url.parse(downloadUrl).host }
+    // If going through proxy, spoof the User-Agent, since may commerical proxies block blank or unknown agents in headers
+    options.headers['User-Agent'] = 'curl/7.21.4 (universal-apple-darwin11.0) libcurl/7.21.4 OpenSSL/0.9.8r zlib/1.2.5'
     // Turn basic authorization into proxy-authorization.
     if (options.auth) {
       options.headers['Proxy-Authorization'] = 'Basic ' + new Buffer(options.auth).toString('base64')
