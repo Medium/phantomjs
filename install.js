@@ -31,76 +31,102 @@ var originalPath = process.env.PATH
 process.env.PATH = helper.cleanPath(originalPath)
 
 // First check whether PhantomJS is already installed.
-var deferred = kew.defer()
-which('phantomjs', deferred.makeNodeResolver());
-deferred.promise
+which('phantomjs', function (err, path) {
+  if (err) {
+    // No version available locally.
+    downloadAndInstall()
+  } else {
+    // Horrible hack to avoid problems during global install. We check to see if
+    // the file `which` found is our own bin script.
+    // See: https://github.com/Obvious/phantomjs/issues/85
+    if (/NPM_INSTALL_MARKER/.test(fs.readFileSync(path, 'utf8'))) {
+      console.log('Looks like an `npm install -g`; unable to check for already installed version.')
+      downloadAndInstall()
 
-  // There's a local copy of phantom we can use.
-  .then(function(path) {
-    console.log('PhantomJS is already installed at', path + '.')
-    exit()
-  })
-
-  // PhantomJS isn't installed globally, so we need to go fetch and install it.
-  .fail(function() {
-    if (process.platform === 'linux' && process.arch === 'x64') {
-      downloadUrl += 'linux-x86_64.tar.bz2'
-    } else if (process.platform === 'linux') {
-      downloadUrl += 'linux-i686.tar.bz2'
-    } else if (process.platform === 'darwin') {
-      downloadUrl += 'macosx.zip'
-    } else if (process.platform === 'win32') {
-      downloadUrl += 'windows.zip'
     } else {
-      console.log('Unexpected platform or architecture:', process.platform, process.arch)
+
+      // Check that the global version matches the expected version.
+      cp.execFile(path, ['--version'], function (err, stdout, stderr) {
+        var version = stdout.trim()
+        if (helper.version == version) {
+          writeLocationFile(path)
+          console.log('PhantomJS is already installed at', path + '.')
+          exit()
+        } else {
+          console.log('PhantomJS detected, but wrong version', stdout.trim(), '@', path + '.')
+          downloadAndInstall()
+        }
+      })
+    }
+  }
+})
+
+function downloadAndInstall() {
+  if (process.platform === 'linux' && process.arch === 'x64') {
+    downloadUrl += 'linux-x86_64.tar.bz2'
+  } else if (process.platform === 'linux') {
+    downloadUrl += 'linux-i686.tar.bz2'
+  } else if (process.platform === 'darwin') {
+    downloadUrl += 'macosx.zip'
+  } else if (process.platform === 'win32') {
+    downloadUrl += 'windows.zip'
+  } else {
+    console.log('Unexpected platform or architecture:', process.platform, process.arch)
+    exit(1)
+  }
+
+  var fileName = downloadUrl.split('/').pop()
+
+  npmconf.load(function (err, conf) {
+    if (err) {
+      console.log('Error loading npm config')
+      console.error(err)
       exit(1)
+      return
     }
 
-    var fileName = downloadUrl.split('/').pop()
+    var tmpPath = findSuitableTempDirectory(conf)
+    var downloadedFile = path.join(tmpPath, fileName)
+    var promise = kew.resolve(true)
 
-    npmconf.load(function(err, conf) {
-      if (err) {
-        console.log('Error loading npm config')
-        console.error(err)
-        exit(1)
-        return
-      }
+    // Start the install.
+    if (!fs.existsSync(downloadedFile)) {
+      promise = promise.then(function () {
+        console.log('Downloading', downloadUrl)
+        console.log('Saving to', downloadedFile)
+        return requestBinary(getRequestOptions(conf.get('proxy')), downloadedFile)
+      })
 
-      var tmpPath = findSuitableTempDirectory(conf)
-      var downloadedFile = path.join(tmpPath, fileName)
-      var promise = kew.resolve(true)
+    } else {
+      console.log('Download already available at', downloadedFile)
+    }
 
-      // Start the install.
-      if (!fs.existsSync(downloadedFile)) {
-        promise = promise.then(function () {
-          console.log('Downloading', downloadUrl)
-          console.log('Saving to', downloadedFile)
-          return requestBinary(getRequestOptions(conf.get('proxy')), downloadedFile)
-        })
-
-      } else {
-        console.log('Download already available at', downloadedFile)
-      }
-
-      promise.then(function () {
-        return extractDownload(downloadedFile, tmpPath)
-      })
-      .then(function () {
-        return copyIntoPlace(tmpPath, libPath)
-      })
-      .then(function () {
-        return fixFilePermissions()
-      })
-      .then(function () {
-        console.log('Done. Phantomjs binary available at', helper.path)
-      })
-      .fail(function (err) {
-        console.error('Phantom installation failed', err.stack)
-        exit(1)
-      })
+    promise.then(function () {
+      return extractDownload(downloadedFile, tmpPath)
     })
-
+    .then(function () {
+      return copyIntoPlace(tmpPath, libPath)
+    })
+    .then(function () {
+      var location = process.platform === 'win32' ?
+          path.join(libPath, 'phantomjs.exe') :
+          path.join(libPath, 'bin' ,'phantomjs')
+      writeLocationFile(location)
+      console.log('Done. Phantomjs binary available at', location)
+    })
+    .fail(function (err) {
+      console.error('Phantom installation failed', err.stack)
+      exit(1)
+    })
   })
+}
+
+
+function writeLocationFile(location) {
+  console.log('Writing location.js file')
+  fs.writeFileSync(path.join(__dirname, 'lib', 'location.js'),
+      'module.exports.location = "' + location + '"')
+}
 
 
 function exit(code) {
@@ -240,18 +266,4 @@ function copyIntoPlace(tmpPath, targetPath) {
   }
 
   return deferred.promise
-}
-
-
-
-function fixFilePermissions() {
-  // Check that the binary is user-executable and fix it if it isn't (problems with unzip library)
-  if (process.platform != 'win32') {
-    var stat = fs.statSync(helper.path)
-    // 64 == 0100 (no octal literal in strict mode)
-    if (!(stat.mode & 64)) {
-      console.log('Fixing file permissions')
-      fs.chmodSync(helper.path, '755')
-    }
-  }
 }
