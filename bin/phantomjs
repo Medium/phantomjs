@@ -10,19 +10,12 @@
  * {NPM_INSTALL_MARKER}
  */
 
-var fs = require('fs')
 var path = require('path')
 var spawn = require('child_process').spawn
 
 var binPath = require(path.join(__dirname, '..', 'lib', 'phantomjs')).path
 
 var args = process.argv.slice(2)
-
-console.log('PhantomJS node wrapper, executing', binPath)
-
-// Make sure the binary is executable.  For some reason doing this inside
-// install does not work correctly.
-fs.chmodSync(binPath, '755')
 
 // For Node 0.6 compatibility, pipe the streams manually, instead of using
 // `{ stdio: 'inherit' }`.

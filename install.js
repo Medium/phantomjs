@@ -20,7 +20,6 @@ var rimraf = require('rimraf').sync
 var url = require('url')
 var which = require('which')
 
-var libPath = path.join(__dirname, 'lib', 'phantom')
 var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-' + helper.version + '-'
 
 var originalPath = process.env.PATH
@@ -30,96 +29,96 @@ var originalPath = process.env.PATH
 // put ./bin on their path
 process.env.PATH = helper.cleanPath(originalPath)
 
-// First check whether PhantomJS is already installed.
-which('phantomjs', function (err, path) {
-  if (err) {
-    // No version available locally.
-    downloadAndInstall()
-  } else {
+var libPath = path.join(__dirname, 'lib', 'phantom')
+var phantomPath = null
+var tmpPath = null
+
+var whichDeferred = kew.defer()
+which('phantomjs', whichDeferred.makeNodeResolver())
+whichDeferred.promise
+  .then(function (path) {
+    phantomPath = path
+
     // Horrible hack to avoid problems during global install. We check to see if
     // the file `which` found is our own bin script.
     // See: https://github.com/Obvious/phantomjs/issues/85
-    if (/NPM_INSTALL_MARKER/.test(fs.readFileSync(path, 'utf8'))) {
+    if (/NPM_INSTALL_MARKER/.test(fs.readFileSync(phantomPath, 'utf8'))) {
       console.log('Looks like an `npm install -g`; unable to check for already installed version.')
-      downloadAndInstall()
+      throw new Error('Global install')
 
     } else {
-
-      // Check that the global version matches the expected version.
-      cp.execFile(path, ['--version'], function (err, stdout, stderr) {
-        var version = stdout.trim()
-        if (helper.version == version) {
-          writeLocationFile(path)
-          console.log('PhantomJS is already installed at', path + '.')
-          exit()
-        } else {
-          console.log('PhantomJS detected, but wrong version', stdout.trim(), '@', path + '.')
-          downloadAndInstall()
-        }
-      })
+      var checkVersionDeferred = kew.defer()
+      cp.execFile(phantomPath, ['--version'], checkVersionDeferred.makeNodeResolver())
+      return checkVersionDeferred.promise
     }
-  }
-})
+  })
+  .then(function (stdout) {
+    var version = stdout.trim()
+    if (helper.version == version) {
+      writeLocationFile(phantomPath)
+      console.log('PhantomJS is already installed at', phantomPath + '.')
+      exit(0)
 
-function downloadAndInstall() {
-  if (process.platform === 'linux' && process.arch === 'x64') {
-    downloadUrl += 'linux-x86_64.tar.bz2'
-  } else if (process.platform === 'linux') {
-    downloadUrl += 'linux-i686.tar.bz2'
-  } else if (process.platform === 'darwin') {
-    downloadUrl += 'macosx.zip'
-  } else if (process.platform === 'win32') {
-    downloadUrl += 'windows.zip'
-  } else {
-    console.log('Unexpected platform or architecture:', process.platform, process.arch)
-    exit(1)
-  }
+    } else {
+      console.log('PhantomJS detected, but wrong version', stdout.trim(), '@', phantomPath + '.')
+      throw new Error('Wrong version')
+    }
+  })
+  .fail(function (err) {
+    // Trying to use a local file failed, so initiate download and install
+    // steps instead.
+    var npmconfDeferred = kew.defer()
+    npmconf.load(npmconfDeferred.makeNodeResolver())
+    return npmconfDeferred.promise
+  })
+  .then(function (conf) {
+    tmpPath = findSuitableTempDirectory(conf)
 
-  var fileName = downloadUrl.split('/').pop()
-
-  npmconf.load(function (err, conf) {
-    if (err) {
-      console.log('Error loading npm config')
-      console.error(err)
+    // Can't use a global version so start a download.
+    if (process.platform === 'linux' && process.arch === 'x64') {
+      downloadUrl += 'linux-x86_64.tar.bz2'
+    } else if (process.platform === 'linux') {
+      downloadUrl += 'linux-i686.tar.bz2'
+    } else if (process.platform === 'darwin') {
+      downloadUrl += 'macosx.zip'
+    } else if (process.platform === 'win32') {
+      downloadUrl += 'windows.zip'
+    } else {
+      console.log('Unexpected platform or architecture:', process.platform, process.arch)
       exit(1)
-      return
     }
 
-    var tmpPath = findSuitableTempDirectory(conf)
+    var fileName = downloadUrl.split('/').pop()
     var downloadedFile = path.join(tmpPath, fileName)
-    var promise = kew.resolve(true)
 
     // Start the install.
     if (!fs.existsSync(downloadedFile)) {
-      promise = promise.then(function () {
-        console.log('Downloading', downloadUrl)
-        console.log('Saving to', downloadedFile)
-        return requestBinary(getRequestOptions(conf.get('proxy')), downloadedFile)
-      })
-
+      console.log('Downloading', downloadUrl)
+      console.log('Saving to', downloadedFile)
+      return requestBinary(getRequestOptions(conf.get('proxy')), downloadedFile)
     } else {
       console.log('Download already available at', downloadedFile)
+      return downloadedFile
     }
-
-    promise.then(function () {
-      return extractDownload(downloadedFile, tmpPath)
-    })
-    .then(function () {
-      return copyIntoPlace(tmpPath, libPath)
-    })
-    .then(function () {
-      var location = process.platform === 'win32' ?
-          path.join(libPath, 'phantomjs.exe') :
-          path.join(libPath, 'bin' ,'phantomjs')
-      writeLocationFile(location)
-      console.log('Done. Phantomjs binary available at', location)
-    })
-    .fail(function (err) {
-      console.error('Phantom installation failed', err.stack)
-      exit(1)
-    })
   })
-}
+  .then(function (downloadedFile) {
+    return extractDownload(downloadedFile, tmpPath)
+  })
+  .then(function () {
+    return copyIntoPlace(tmpPath, libPath)
+  })
+  .then(function () {
+    var location = process.platform === 'win32' ?
+        path.join(libPath, 'phantomjs.exe') :
+        path.join(libPath, 'bin' ,'phantomjs')
+    writeLocationFile(location)
+    console.log('Done. Phantomjs binary available at', location)
+    exit(0)
+  })
+  .fail(function (err) {
+    console.error('Phantom installation failed', err.stack)
+    exit(1)
+  })
 
 
 function writeLocationFile(location) {
@@ -208,7 +207,7 @@ function requestBinary(requestOptions, filePath) {
       response.addListener('end',   function () {
         console.log('Received ' + Math.floor(count / 1024) + 'K total.')
         fs.closeSync(outFile)
-        deferred.resolve(true)
+        deferred.resolve(filePath)
       })
 
     } else {
