@@ -12,6 +12,7 @@ var args = process.argv.slice(2)
 var cp = spawn(binPath, args)
 cp.stdout.pipe(process.stdout)
 cp.stderr.pipe(process.stderr)
+process.stdin.pipe(cp.stdin)
 cp.on('exit', process.exit)
 
 process.on('SIGTERM', function() {
