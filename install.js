@@ -26,8 +26,9 @@ var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-' + helper.ve
 var originalPath = process.env.PATH
 
 // NPM adds bin directories to the path, which will cause `which` to find the
-// bin for this package not the actual phantomjs bin.
-process.env.PATH = originalPath.replace(/:[^:]*node_modules[^:]*/g, '')
+// bin for this package not the actual phantomjs bin.  Also help out people who
+// put ./bin on their path
+process.env.PATH = helper.cleanPath(originalPath)
 
 // First check whether PhantomJS is already installed.
 var deferred = kew.defer()
