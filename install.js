@@ -124,7 +124,7 @@ whichDeferred.promise
 function writeLocationFile(location) {
   console.log('Writing location.js file')
   fs.writeFileSync(path.join(__dirname, 'lib', 'location.js'),
-      'module.exports.location = "' + location + '"')
+      'module.exports.location = "' + location.replace(/\\/g, '\\\\') + '"')
 }
 
 
