@@ -109,7 +109,7 @@ whichDeferred.promise
   })
   .then(function () {
     var location = process.platform === 'win32' ?
-        path.join(libPath, 'phantomjs.exe') :
+        path.join(libPath, 'phantomjs.exe').replace(/\\/g, '\\\\') :
         path.join(libPath, 'bin' ,'phantomjs')
     writeLocationFile(location)
     console.log('Done. Phantomjs binary available at', location)

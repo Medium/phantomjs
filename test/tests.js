@@ -35,7 +35,10 @@ exports.testPhantomExecutesTestScript = function (test) {
 exports.testBinFile = function (test) {
   test.expect(1)
 
-  var binPath = path.join(__dirname, '..', 'bin', 'phantomjs')
+  var binPath = process.platform === 'win32' ? 
+      path.join(__dirname, '..', 'lib', 'phantom', 'phantomjs.exe') :
+      path.join(__dirname, '..', 'bin', 'phantomjs')
+
   childProcess.execFile(binPath, ['--version'], function (err, stdout, stderr) {
     test.equal(phantomjs.version, stdout.trim(), 'Version should be match')
     test.done()
