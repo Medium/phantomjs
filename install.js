@@ -18,6 +18,7 @@ var mkdirp = require('mkdirp')
 var path = require('path')
 var rimraf = require('rimraf').sync
 var url = require('url')
+var util = require('util')
 var which = require('which')
 
 var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-' + helper.version + '-'
@@ -116,7 +117,7 @@ whichDeferred.promise
     exit(0)
   })
   .fail(function (err) {
-    console.error('Phantom installation failed', err.stack)
+    console.error('Phantom installation failed', err, err.stack)
     exit(1)
   })
 
@@ -218,7 +219,8 @@ function requestBinary(requestOptions, filePath) {
 
     } else {
       client.abort()
-      deferred.reject('Error with http request: ' + util.inspect(response.headers))
+      console.error('Error requesting archive')
+      deferred.reject(new Error('Error with http request: ' + util.inspect(response.headers)))
     }
   })
 
@@ -238,14 +240,16 @@ function extractDownload(filePath, tmpPath) {
       zip.extractAllTo(tmpPath, true)
       deferred.resolve(true)
     } catch (err) {
-      deferred.reject('Error extracting archive ' + err.stack)
+      console.error('Error extracting archive')
+      deferred.reject(err)
     }
 
   } else {
     console.log('Extracting tar contents (via spawned process)')
     cp.execFile('tar', ['jxf', filePath], options, function (err, stdout, stderr) {
       if (err) {
-        deferred.reject('Error extracting archive ' + err.stack)
+        console.error('Error extracting archive')
+        deferred.reject(err)
       } else {
         deferred.resolve(true)
       }
