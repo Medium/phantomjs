@@ -150,6 +150,9 @@ function findSuitableTempDirectory(npmConf) {
 
     try {
       mkdirp.sync(candidatePath, '0777')
+      // Make double sure we have 0777 permissions; some operating systems
+      // default umask does not allow write by default.
+      fs.chmodSync(candidatePath, '0777')
       var testFile = path.join(candidatePath, now + '.tmp')
       fs.writeFileSync(testFile, 'test')
       fs.unlinkSync(testFile)
