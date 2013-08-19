@@ -19,6 +19,7 @@ var path = require('path')
 var rimraf = require('rimraf').sync
 var url = require('url')
 var which = require('which')
+var util = require('util')
 
 var downloadUrl = 'http://phantomjs.googlecode.com/files/phantomjs-' + helper.version + '-'
 
