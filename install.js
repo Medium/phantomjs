@@ -195,7 +195,8 @@ function requestBinary(requestOptions, filePath) {
 
   var count = 0
   var notifiedCount = 0
-  var outFile = fs.openSync(filePath, 'w')
+  var writePath = filePath + '-download-' + Date.now()
+  var outFile = fs.openSync(writePath, 'w')
 
   var client = http.get(requestOptions, function (response) {
     var status = response.statusCode
@@ -214,6 +215,7 @@ function requestBinary(requestOptions, filePath) {
       response.addListener('end',   function () {
         console.log('Received ' + Math.floor(count / 1024) + 'K total.')
         fs.closeSync(outFile)
+        fs.renameSync(writePath, filePath)
         deferred.resolve(filePath)
       })
 
