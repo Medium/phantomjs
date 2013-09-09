@@ -269,7 +269,7 @@ function copyIntoPlace(tmpPath, targetPath) {
   var files = fs.readdirSync(tmpPath)
   for (var i = 0; i < files.length; i++) {
     var file = path.join(tmpPath, files[i])
-    if (fs.statSync(file).isDirectory()) {
+    if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
       console.log('Renaming extracted folder', file, '->', targetPath)
       ncp(file, targetPath, deferred.makeNodeResolver())
       break
