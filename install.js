@@ -109,27 +109,12 @@ whichDeferred.promise
     return copyIntoPlace(tmpPath, libPath)
   })
   .then(function () {
-    var location = process.platform === 'win32' ?
-        path.join(libPath, 'phantomjs.exe') :
-        path.join(libPath, 'bin' ,'phantomjs')
-    writeLocationFile(location)
-    console.log('Done. Phantomjs binary available at', location)
     exit(0)
   })
   .fail(function (err) {
     console.error('Phantom installation failed', err, err.stack)
     exit(1)
   })
-
-
-function writeLocationFile(location) {
-  console.log('Writing location.js file')
-  if (process.platform === 'win32') {
-    location = location.replace(/\\/g, '\\\\')
-  }
-  fs.writeFileSync(path.join(__dirname, 'lib', 'location.js'),
-      'module.exports.location = "' + location + '"')
-}
 
 
 function exit(code) {
