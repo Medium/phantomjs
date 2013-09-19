@@ -116,6 +116,17 @@ whichDeferred.promise
     exit(1)
   })
 
+  
+function writeLocationFile(location) {
+  // The location.js file should only be written if a path other than the relative one was chosen.
+  console.log('Writing location.js file')
+  if (process.platform === 'win32') {
+    location = location.replace(/\\/g, '\\\\')
+  }
+  fs.writeFileSync(path.join(__dirname, 'lib', 'location.js'),
+      'module.exports.location = "' + location + '"')
+}
+
 
 function exit(code) {
   process.env.PATH = originalPath
