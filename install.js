@@ -30,7 +30,8 @@ var originalPath = process.env.PATH
 // put ./bin on their path
 process.env.PATH = helper.cleanPath(originalPath)
 
-var libPath = path.join(__dirname, 'lib', 'phantom')
+var libPath = path.join(__dirname, 'lib')
+var pkgPath = path.join(libPath, 'phantom')
 var phantomPath = null
 var tmpPath = null
 
@@ -106,13 +107,14 @@ whichDeferred.promise
     return extractDownload(downloadedFile, tmpPath)
   })
   .then(function () {
-    return copyIntoPlace(tmpPath, libPath)
+    return copyIntoPlace(tmpPath, pkgPath)
   })
   .then(function () {
     var location = process.platform === 'win32' ?
-        path.join(libPath, 'phantomjs.exe') :
-        path.join(libPath, 'bin' ,'phantomjs')
-    writeLocationFile(location)
+        path.join(pkgPath, 'phantomjs.exe') :
+        path.join(pkgPath, 'bin' ,'phantomjs')
+    var relativeLocation = path.relative(libPath, location)
+    writeLocationFile(relativeLocation)
     console.log('Done. Phantomjs binary available at', location)
     exit(0)
   })
@@ -127,7 +129,7 @@ function writeLocationFile(location) {
   if (process.platform === 'win32') {
     location = location.replace(/\\/g, '\\\\')
   }
-  fs.writeFileSync(path.join(__dirname, 'lib', 'location.js'),
+  fs.writeFileSync(path.join(libPath, 'location.js'),
       'module.exports.location = "' + location + '"')
 }
 
