@@ -104,10 +104,10 @@ whichDeferred.promise
     }
   })
   .then(function (downloadedFile) {
-    return extractDownload(downloadedFile, tmpPath)
+    return extractDownload(downloadedFile)
   })
-  .then(function () {
-    return copyIntoPlace(tmpPath, pkgPath)
+  .then(function (extractedPath) {
+    return copyIntoPlace(extractedPath, pkgPath)
   })
   .then(function () {
     var location = process.platform === 'win32' ?
@@ -232,17 +232,25 @@ function requestBinary(requestOptions, filePath) {
 }
 
 
-function extractDownload(filePath, tmpPath) {
+function extractDownload(filePath) {
   var deferred = kew.defer()
-  var options = {cwd: tmpPath}
+  // extract to a unique directory in case multiple processes are
+  // installing and extracting at once
+  var extractedPath = filePath + '-extract-' + Date.now()
+  var options = {cwd: extractedPath}
+
+  mkdirp.sync(extractedPath, '0777')
+  // Make double sure we have 0777 permissions; some operating systems
+  // default umask does not allow write by default.
+  fs.chmodSync(extractedPath, '0777')
 
   if (filePath.substr(-4) === '.zip') {
     console.log('Extracting zip contents')
 
     try {
       var zip = new AdmZip(filePath)
-      zip.extractAllTo(tmpPath, true)
-      deferred.resolve(true)
+      zip.extractAllTo(extractedPath, true)
+      deferred.resolve(extractedPath)
     } catch (err) {
       console.error('Error extracting archive')
       deferred.reject(err)
@@ -255,7 +263,7 @@ function extractDownload(filePath, tmpPath) {
         console.error('Error extracting archive')
         deferred.reject(err)
       } else {
-        deferred.resolve(true)
+        deferred.resolve(extractedPath)
       }
     })
   }
@@ -263,14 +271,14 @@ function extractDownload(filePath, tmpPath) {
 }
 
 
-function copyIntoPlace(tmpPath, targetPath) {
+function copyIntoPlace(extractedPath, targetPath) {
   rimraf(targetPath)
 
   var deferred = kew.defer()
   // Look for the extracted directory, so we can rename it.
-  var files = fs.readdirSync(tmpPath)
+  var files = fs.readdirSync(extractedPath)
   for (var i = 0; i < files.length; i++) {
-    var file = path.join(tmpPath, files[i])
+    var file = path.join(extractedPath, files[i])
     if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
       console.log('Renaming extracted folder', file, '->', targetPath)
       ncp(file, targetPath, deferred.makeNodeResolver())
