@@ -286,5 +286,8 @@ function copyIntoPlace(extractedPath, targetPath) {
     }
   }
 
-  return deferred.promise
+  // Cleanup extracted directory after it's been copied
+  return deferred.promise.then(function() {
+    return rimraf(extractedPath)
+  });
 }
