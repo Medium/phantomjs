@@ -83,7 +83,7 @@ whichDeferred.promise
       downloadUrl += 'linux-i686.tar.bz2'
     } else if (process.platform === 'darwin') {
       downloadUrl += 'macosx.zip'
-    } else if (process.platform === 'openbsd') {
+    } else if (process.platform === 'openbsd' || process.platform === 'freebsd') {
       downloadUrl += 'macosx.zip'
     } else if (process.platform === 'win32') {
       downloadUrl += 'windows.zip'
