@@ -143,7 +143,7 @@ function exit(code) {
 function findSuitableTempDirectory(npmConf) {
   var now = Date.now()
   var candidateTmpDirs = [
-    process.env.TMPDIR || '/tmp',
+    process.env.TMPDIR || process.env.TEMP || '/tmp',
     npmConf.get('tmp'),
     path.join(process.cwd(), 'tmp')
   ]
