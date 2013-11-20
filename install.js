@@ -280,7 +280,7 @@ function copyIntoPlace(extractedPath, targetPath) {
   for (var i = 0; i < files.length; i++) {
     var file = path.join(extractedPath, files[i])
     if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
-      console.log('Renaming extracted folder', file, '->', targetPath)
+      console.log('Copying extracted folder', file, '->', targetPath)
       ncp(file, targetPath, deferred.makeNodeResolver())
       break
     }
@@ -288,6 +288,11 @@ function copyIntoPlace(extractedPath, targetPath) {
 
   // Cleanup extracted directory after it's been copied
   return deferred.promise.then(function() {
-    return rimraf(extractedPath)
+    try {
+      return rimraf(extractedPath)
+    } catch (e) {
+      console.warn('Unable to remove temporary files at "' + extractedPath +
+          '", see https://github.com/Obvious/phantomjs/issues/108 for details.')
+    }
   });
 }
