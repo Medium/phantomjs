@@ -68,6 +68,10 @@ with an additional build number that is used for revisions to the installer.
 As such `1.8.0-1` will `1.8.0-2` will both install PhantomJs 1.8 but the latter
 has newer changes to the installer.
 
+## Installing multiple binaries when keeping node_modules in project repo
+
+During runtime, this PhantomJS wrapper points at a binary specific to the platform currently running. This helps when storing `node_modules` in your repo as you will likely have to install multiple PhantomJS binaries, unless every machine you use has the same OS. If the necessary binary is not currently installed on the machine when this script is run, it will be installed in the `lib/phantom/bin` folder and then run. You will then need to commit the `node_modules` folder with the newly-added binary.
+
 A Note on PhantomJS
 -------------------
 

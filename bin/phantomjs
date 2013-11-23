@@ -10,27 +10,44 @@
  * {NPM_INSTALL_MARKER}
  */
 
+var fs = require('fs')
 var path = require('path')
 var spawn = require('child_process').spawn
 
-var binPath = require(path.join(__dirname, '..', 'lib', 'phantomjs')).path
+var phantomLib = require(path.join(__dirname, '..', 'lib', 'phantomjs'))
+var binPath = phantomLib.path
 
-var args = process.argv.slice(2)
+// If no binary is available for the current platform, install it then run phantom
+if (!binPath) {
+  var installProcess = spawn('node', [path.join(__dirname, '../install.js')], { stdio: 'inherit' })
+  installProcess.on('close', function () {
+    binPath = path.join(__dirname, '../lib', JSON.parse(fs.readFileSync(path.join(__dirname, '../lib/binary.json')))[process.platform])
+    fs.chmodSync(binPath, '755')
+    runPhantom()
+  })
+} else {
+  runPhantom()
+}
 
-// For Node 0.6 compatibility, pipe the streams manually, instead of using
-// `{ stdio: 'inherit' }`.
-var cp = spawn(binPath, args)
-cp.stdout.pipe(process.stdout)
-cp.stderr.pipe(process.stderr)
-process.stdin.pipe(cp.stdin)
+function runPhantom() {
+  var args = process.argv.slice(2)
 
-cp.on('error', function (err) {
-  console.error('Error executing phantom at', binPath)
-  console.error(err.stack)
-})
-cp.on('exit', process.exit)
+  // For Node 0.6 compatibility, pipe the streams manually, instead of using
+  // `{ stdio: 'inherit' }`.
+  var cp = spawn(binPath, args)
+  cp.stdout.pipe(process.stdout)
+  cp.stderr.pipe(process.stderr)
+  process.stdin.pipe(cp.stdin)
 
-process.on('SIGTERM', function() {
-  cp.kill('SIGTERM')
-  process.exit(1)
-})
+  cp.on('error', function (err) {
+    console.error('Error executing phantom at', binPath)
+    console.error(err.stack)
+  })
+  cp.on('exit', process.exit)
+
+  process.on('SIGTERM', function() {
+    cp.kill('SIGTERM')
+    process.exit(1)
+  })
+}
+
