@@ -1,5 +1,5 @@
 /node_modules
 /lib/phantom
-/lib/location.js
+/lib/binary.json
 /tmp
 npm-debug.log
