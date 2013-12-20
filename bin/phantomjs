@@ -28,7 +28,13 @@ cp.on('error', function (err) {
   console.error('Error executing phantom at', binPath)
   console.error(err.stack)
 })
-cp.on('exit', process.exit)
+
+cp.on('exit', function(code){
+  // Wait few ms for error to be printed.
+  setTimeout(function(){
+    process.exit(code)
+  }, 20)
+});
 
 process.on('SIGTERM', function() {
   cp.kill('SIGTERM')

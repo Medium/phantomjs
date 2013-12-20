@@ -32,6 +32,15 @@ exports.testPhantomExecutesTestScript = function (test) {
 }
 
 
+exports.testPhantomExitCode = function (test) {
+  test.expect(1)
+  childProcess.execFile(phantomjs.path, [path.join(__dirname, 'exit.js')], function (err, stdout, stderr) {
+    test.equals(err.code, 123, 'Exit code should be returned from phantom script')
+    test.done()
+  })
+}
+
+
 exports.testBinFile = function (test) {
   test.expect(1)
 
