@@ -44,6 +44,7 @@ phantomjs binary/executable.
 Below is an example of using this package via node.
 
 ```javascript
+var path = require('path')
 var childProcess = require('child_process')
 var phantomjs = require('phantomjs')
 var binPath = phantomjs.path
