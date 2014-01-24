@@ -29,7 +29,7 @@ Running
 -------
 
 ```shell
-bin/phantom [phantom arguments]
+bin/phantomjs [phantom arguments]
 ```
 
 And npm will install a link to the binary in `node_modules/.bin` as
