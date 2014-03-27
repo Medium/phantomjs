@@ -64,3 +64,15 @@ exports.testCleanPath = function (test) {
   test.equal('/Work/bin:/usr/bin', phantomjs.cleanPath('/Work/bin:/Work/phantomjs/node_modules/.bin:/usr/bin'))
   test.done()
 }
+
+exports.testPhantomRun = function (test) {
+  var proc = phantomjs.run(['--version']);
+  var buffer = '';
+  proc.stdout.on('data', function (data) {
+    buffer += data;
+  });
+  proc.stdout.on('end', function (data) {
+    test.equal(phantomjs.version, buffer.trim(), 'Version should match when using phantomjs.run(--version)');
+    test.done();
+  });
+}
