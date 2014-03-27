@@ -48,6 +48,7 @@
     "which": "~1.0.5"
   },
   "devDependencies": {
-    "nodeunit": "~0.7.4"
+    "nodeunit": "~0.7.4",
+    "request": "^2.34.0"
   }
 }

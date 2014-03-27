@@ -6,6 +6,7 @@
 var childProcess = require('child_process')
 var fs = require('fs')
 var path = require('path')
+var request = require('request')
 var phantomjs = require('../lib/phantomjs')
 
 
@@ -74,5 +75,18 @@ exports.testPhantomRun = function (test) {
   proc.stdout.on('end', function (data) {
     test.equal(phantomjs.version, buffer.trim(), 'Version should match when using phantomjs.run(--version)');
     test.done();
+  });
+}
+
+exports.testPhantomStartStop = function (test) {
+  var server = phantomjs.start(function () {
+    request.get(server.address() + '/status', function (error, response, body) {
+      var bodyJson = JSON.parse(body);
+      test.equal(bodyJson.status, 0, 'Status should be 0');
+      server.stop(function (code, signal) {
+        test.equal(signal, 'SIGTERM', 'Signal should be SIGTERM');
+        test.done();
+      });
+    });
   });
 }
