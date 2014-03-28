@@ -97,7 +97,7 @@ whichDeferred.promise
     if (!fs.existsSync(downloadedFile)) {
       console.log('Downloading', downloadUrl)
       console.log('Saving to', downloadedFile)
-      return requestBinary(getRequestOptions(conf.get('proxy')), downloadedFile)
+      return requestBinary(getRequestOptions(conf), downloadedFile)
     } else {
       console.log('Download already available at', downloadedFile)
       return downloadedFile
@@ -172,8 +172,11 @@ function findSuitableTempDirectory(npmConf) {
 }
 
 
-function getRequestOptions(proxyUrl) {
+function getRequestOptions(conf) {
+  var proxyUrl = conf.get('http-proxy') || conf.get('proxy')
+
   if (proxyUrl) {
+    console.log('Using proxy ' + proxyUrl)
     var options = url.parse(proxyUrl)
     options.path = downloadUrl
     options.headers = { Host: url.parse(downloadUrl).host }
