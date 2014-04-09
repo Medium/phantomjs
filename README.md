@@ -1,5 +1,5 @@
-phantom
-=======
+phantomjs
+=========
 
 An NPM wrapper for [PhantomJS](http://phantomjs.org/), headless webkit with JS API.
 
