@@ -86,7 +86,7 @@ whichDeferred.promise
     } else if (process.platform === 'win32') {
       downloadUrl += 'windows.zip'
     } else {
-      console.log('Unexpected platform or architecture:', process.platform, process.arch)
+      console.error('Unexpected platform or architecture:', process.platform, process.arch)
       exit(1)
     }
 
@@ -226,8 +226,12 @@ function requestBinary(requestOptions, filePath) {
 
     } else {
       client.abort()
-      console.error('Error requesting archive')
-      deferred.reject(new Error('Error with http request: ' + util.inspect(response.headers)))
+      console.error('Error requesting archive.\n' +
+          'Status: ' + status + '\n' +
+          'Request options: ' + JSON.stringify(requestOptions, null, 2) + '\n' +
+          'Response headers: ' + JSON.stringify(response.headers, null, 2) + '\n' +
+          'Make sure your network and proxy settings are correct.')
+      exit(1)
     }
   })
 
