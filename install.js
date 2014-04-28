@@ -115,6 +115,10 @@ whichDeferred.promise
         path.join(pkgPath, 'bin' ,'phantomjs')
     var relativeLocation = path.relative(libPath, location)
     writeLocationFile(relativeLocation)
+    
+    // Ensure executable is executable by all users
+    fs.chmodSync(location, '755')
+    
     console.log('Done. Phantomjs binary available at', location)
     exit(0)
   })
