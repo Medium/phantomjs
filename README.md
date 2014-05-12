@@ -66,7 +66,7 @@ Versioning
 The NPM package version tracks the version of PhantomJS that will be installed,
 with an additional build number that is used for revisions to the installer.
 
-As such `1.8.0-1` will `1.8.0-2` will both install PhantomJs 1.8 but the latter
+As such `1.8.0-1` and `1.8.0-2` will both install PhantomJs 1.8 but the latter
 has newer changes to the installer.
 
 A Note on PhantomJS
