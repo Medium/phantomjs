@@ -3,7 +3,7 @@ slimerjs
 
 An NPM wrapper for [SlimerJS](http://slimerjs.org/), A scriptable browser for Web developers.
 
-This project is a find-and-replace of [phantomjs](/Medium/phantomjs).
+This project is a find-and-replace of [phantomjs](https://github.com/Medium/phantomjs).
 
 Building and Installing
 -----------------------
