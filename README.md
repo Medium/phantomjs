@@ -1,7 +1,9 @@
 slimerjs
 =========
 
-An NPM wrapper for [SlimerJS](http://slimerjs.org/), headless webkit with JS API.
+An NPM wrapper for [SlimerJS](http://slimerjs.org/), A scriptable browser for Web developers.
+
+This project is a find-and-replace of [phantomjs](/Medium/phantomjs).
 
 Building and Installing
 -----------------------
@@ -66,7 +68,7 @@ Versioning
 The NPM package version tracks the version of SlimerJS that will be installed,
 with an additional build number that is used for revisions to the installer.
 
-As such `1.8.0-1` and `1.8.0-2` will both install SlimerJs 1.8 but the latter
+As such `0.9.1-1` and `0.9.1-2` will both install SlimerJs 0.9.1 but the latter
 has newer changes to the installer.
 
 A Note on SlimerJS
@@ -98,10 +100,7 @@ Contributing
 ------------
 
 Questions, comments, bug reports, and pull requests are all welcome.  Submit them at
-[the project on GitHub](https://github.com/Obvious/slimerjs/).  If you haven't contributed to an
-[Obvious](http://github.com/Obvious/) project before please head over to the
-[Open Source Project](https://github.com/Obvious/open-source#note-to-external-contributors) and fill
-out an OCLA (it should be pretty painless).
+[the project on GitHub](https://github.com/graingert/slimerjs/).
 
 Bug reports that include steps-to-reproduce (including code) are the
 best. Even better, make them in the form of pull requests.
