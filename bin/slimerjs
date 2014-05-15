@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Script that will execute the downloaded phantomjs binary.  stdio are
+ * Script that will execute the downloaded slimerjs binary.  stdio are
  * forwarded to and from the child process.
  *
  * The following is for an ugly hack to avoid a problem where the installer
@@ -13,7 +13,7 @@
 var path = require('path')
 var spawn = require('child_process').spawn
 
-var binPath = require(path.join(__dirname, '..', 'lib', 'phantomjs')).path
+var binPath = require(path.join(__dirname, '..', 'lib', 'slimerjs')).path
 
 var args = process.argv.slice(2)
 
@@ -25,7 +25,7 @@ cp.stderr.pipe(process.stderr)
 process.stdin.pipe(cp.stdin)
 
 cp.on('error', function (err) {
-  console.error('Error executing phantom at', binPath)
+  console.error('Error executing slimer at', binPath)
   console.error(err.stack)
 })
 

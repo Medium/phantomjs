@@ -1,7 +1,7 @@
 // Copyright 2012 The Obvious Corporation.
 
 /*
- * This simply fetches the right version of phantom for the current platform.
+ * This simply fetches the right version of slimer for the current platform.
  */
 
 'use strict'
@@ -9,7 +9,7 @@
 var AdmZip = require('adm-zip')
 var cp = require('child_process')
 var fs = require('fs')
-var helper = require('./lib/phantomjs')
+var helper = require('./lib/slimerjs')
 var http = require('http')
 var kew = require('kew')
 var ncp = require('ncp')
@@ -21,48 +21,48 @@ var url = require('url')
 var util = require('util')
 var which = require('which')
 
-var downloadUrl = 'http://cdn.bitbucket.org/ariya/phantomjs/downloads/phantomjs-' + helper.version + '-'
+var downloadUrl = 'http://download.slimerjs.org/v0.9/'+ helper.version +'/slimerjs-'+ helper.version +'-'
 
 var originalPath = process.env.PATH
 
 // NPM adds bin directories to the path, which will cause `which` to find the
-// bin for this package not the actual phantomjs bin.  Also help out people who
+// bin for this package not the actual slimerjs bin.  Also help out people who
 // put ./bin on their path
 process.env.PATH = helper.cleanPath(originalPath)
 
 var libPath = path.join(__dirname, 'lib')
-var pkgPath = path.join(libPath, 'phantom')
-var phantomPath = null
+var pkgPath = path.join(libPath, 'slimer')
+var slimerPath = null
 var tmpPath = null
 
 var whichDeferred = kew.defer()
-which('phantomjs', whichDeferred.makeNodeResolver())
+which('slimerjs', whichDeferred.makeNodeResolver())
 whichDeferred.promise
   .then(function (path) {
-    phantomPath = path
+    slimerPath = path
 
     // Horrible hack to avoid problems during global install. We check to see if
     // the file `which` found is our own bin script.
-    // See: https://github.com/Obvious/phantomjs/issues/85
-    if (/NPM_INSTALL_MARKER/.test(fs.readFileSync(phantomPath, 'utf8'))) {
+    // See: https://github.com/Obvious/slimerjs/issues/85
+    if (/NPM_INSTALL_MARKER/.test(fs.readFileSync(slimerPath, 'utf8'))) {
       console.log('Looks like an `npm install -g`; unable to check for already installed version.')
       throw new Error('Global install')
 
     } else {
       var checkVersionDeferred = kew.defer()
-      cp.execFile(phantomPath, ['--version'], checkVersionDeferred.makeNodeResolver())
+      cp.execFile(slimerPath, ['--version'], checkVersionDeferred.makeNodeResolver())
       return checkVersionDeferred.promise
     }
   })
   .then(function (stdout) {
     var version = stdout.trim()
     if (helper.version == version) {
-      writeLocationFile(phantomPath)
-      console.log('PhantomJS is already installed at', phantomPath + '.')
+      writeLocationFile(slimerPath)
+      console.log('SlimerJS is already installed at', slimerPath + '.')
       exit(0)
 
     } else {
-      console.log('PhantomJS detected, but wrong version', stdout.trim(), '@', phantomPath + '.')
+      console.log('SlimerJS detected, but wrong version', stdout.trim(), '@', slimerPath + '.')
       throw new Error('Wrong version')
     }
   })
@@ -76,15 +76,16 @@ whichDeferred.promise
   .then(function (conf) {
     tmpPath = findSuitableTempDirectory(conf)
 
+
     // Can't use a global version so start a download.
     if (process.platform === 'linux' && process.arch === 'x64') {
       downloadUrl += 'linux-x86_64.tar.bz2'
     } else if (process.platform === 'linux') {
       downloadUrl += 'linux-i686.tar.bz2'
     } else if (process.platform === 'darwin' || process.platform === 'openbsd' || process.platform === 'freebsd') {
-      downloadUrl += 'macosx.zip'
+      downloadUrl += 'mac.tar.bz2'
     } else if (process.platform === 'win32') {
-      downloadUrl += 'windows.zip'
+      downloadUrl += 'win32.zip'
     } else {
       console.error('Unexpected platform or architecture:', process.platform, process.arch)
       exit(1)
@@ -111,19 +112,19 @@ whichDeferred.promise
   })
   .then(function () {
     var location = process.platform === 'win32' ?
-        path.join(pkgPath, 'phantomjs.exe') :
-        path.join(pkgPath, 'bin' ,'phantomjs')
+        path.join(pkgPath, 'slimerjs.bat') :
+        path.join(pkgPath, 'slimerjs')
     var relativeLocation = path.relative(libPath, location)
     writeLocationFile(relativeLocation)
     
     // Ensure executable is executable by all users
     fs.chmodSync(location, '755')
     
-    console.log('Done. Phantomjs binary available at', location)
+    console.log('Done. Slimerjs binary available at', location)
     exit(0)
   })
   .fail(function (err) {
-    console.error('Phantom installation failed', err, err.stack)
+    console.error('Slimer installation failed', err, err.stack)
     exit(1)
   })
 
@@ -153,7 +154,7 @@ function findSuitableTempDirectory(npmConf) {
   ]
 
   for (var i = 0; i < candidateTmpDirs.length; i++) {
-    var candidatePath = path.join(candidateTmpDirs[i], 'phantomjs')
+    var candidatePath = path.join(candidateTmpDirs[i], 'slimerjs')
 
     try {
       mkdirp.sync(candidatePath, '0777')
@@ -170,7 +171,7 @@ function findSuitableTempDirectory(npmConf) {
   }
 
   console.error('Can not find a writable tmp directory, please report issue ' +
-      'on https://github.com/Obvious/phantomjs/issues/59 with as much ' +
+      'on https://github.com/Obvious/slimerjs/issues/59 with as much ' +
       'information as possible.')
   exit(1)
 }
@@ -303,7 +304,7 @@ function copyIntoPlace(extractedPath, targetPath) {
       return rimraf(extractedPath)
     } catch (e) {
       console.warn('Unable to remove temporary files at "' + extractedPath +
-          '", see https://github.com/Obvious/phantomjs/issues/108 for details.')
+          '", see https://github.com/Obvious/slimerjs/issues/108 for details.')
     }
   });
 }

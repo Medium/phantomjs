@@ -1,5 +1,5 @@
 /node_modules
-/lib/phantom
+/lib/slimer
 /lib/location.js
 /tmp
 npm-debug.log

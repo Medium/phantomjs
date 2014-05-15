@@ -1,4 +1,4 @@
-// phantomjs test script
+// slimerjs test script
 // opens url and reports time to load
 // requires an active internet connection
 var page = require('webpage').create()
@@ -8,7 +8,7 @@ var address
 
 if (system.args.length === 1) {
   console.log('Usage: loadspeed.js <some URL>')
-  phantom.exit()
+  slimer.exit()
 }
 
 t = Date.now()
@@ -21,5 +21,5 @@ page.open(address, function (status) {
     console.log('Loading time ' + t + ' msec')
   }
 
-  phantom.exit()
+  slimer.exit()
 })

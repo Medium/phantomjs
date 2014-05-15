@@ -1,1 +1,1 @@
-phantom.exit(123)
+slimer.exit(123)

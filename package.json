@@ -1,16 +1,16 @@
 {
-  "name": "phantomjs",
+  "name": "slimerjs",
   "version": "1.9.7-5",
   "keywords": [
-    "phantomjs",
+    "slimerjs",
     "headless",
     "webkit"
   ],
   "description": "Headless WebKit with JS API",
-  "homepage": "https://github.com/Obvious/phantomjs",
+  "homepage": "https://github.com/Obvious/slimerjs",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Obvious/phantomjs.git"
+    "url": "git://github.com/Obvious/slimerjs.git"
   },
   "licenses": [
     {
@@ -30,9 +30,9 @@
       "web": "http://pupius.co.uk/"
     }
   ],
-  "main": "lib/phantomjs",
+  "main": "lib/slimerjs",
   "bin": {
-    "phantomjs": "./bin/phantomjs"
+    "slimerjs": "./bin/slimerjs"
   },
   "scripts": {
     "install": "node install.js",

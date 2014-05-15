@@ -1,13 +1,13 @@
-phantomjs
+slimerjs
 =========
 
-An NPM wrapper for [PhantomJS](http://phantomjs.org/), headless webkit with JS API.
+An NPM wrapper for [SlimerJS](http://slimerjs.org/), headless webkit with JS API.
 
 Building and Installing
 -----------------------
 
 ```shell
-npm install phantomjs
+npm install slimerjs
 ```
 
 Or grab the source and
@@ -17,10 +17,10 @@ node ./install.js
 ```
 
 What this is really doing is just grabbing a particular "blessed" (by
-this module) version of Phantom. As new versions of Phantom are released
+this module) version of Slimer. As new versions of Slimer are released
 and vetted, this module will be updated accordingly.
 
-The package has been set up to fetch and run Phantom for MacOS (darwin),
+The package has been set up to fetch and run Slimer for MacOS (darwin),
 Linux based platforms (as identified by nodejs), and -- as of version 0.2.0 --
 Windows (thanks to [Domenic Denicola](https://github.com/domenic)).  If you
 spot any platform weirdnesses, let us know or send a patch.
@@ -29,7 +29,7 @@ Running
 -------
 
 ```shell
-bin/phantomjs [phantom arguments]
+bin/slimerjs [slimer arguments]
 ```
 
 And npm will install a link to the binary in `node_modules/.bin` as
@@ -39,19 +39,19 @@ Running via node
 ----------------
 
 The package exports a `path` string that contains the path to the
-phantomjs binary/executable.
+slimerjs binary/executable.
 
 Below is an example of using this package via node.
 
 ```javascript
 var path = require('path')
 var childProcess = require('child_process')
-var phantomjs = require('phantomjs')
-var binPath = phantomjs.path
+var slimerjs = require('slimerjs')
+var binPath = slimerjs.path
 
 var childArgs = [
-  path.join(__dirname, 'phantomjs-script.js'),
-  'some other argument (passed to phantomjs script)'
+  path.join(__dirname, 'slimerjs-script.js'),
+  'some other argument (passed to slimerjs script)'
 ]
 
 childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
@@ -63,30 +63,30 @@ childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
 Versioning
 ----------
 
-The NPM package version tracks the version of PhantomJS that will be installed,
+The NPM package version tracks the version of SlimerJS that will be installed,
 with an additional build number that is used for revisions to the installer.
 
-As such `1.8.0-1` and `1.8.0-2` will both install PhantomJs 1.8 but the latter
+As such `1.8.0-1` and `1.8.0-2` will both install SlimerJs 1.8 but the latter
 has newer changes to the installer.
 
-A Note on PhantomJS
+A Note on SlimerJS
 -------------------
 
-PhantomJS is not a library for NodeJS.  It's a separate environment and code
-written for node is unlikely to be compatible.  In particular PhantomJS does
+SlimerJS is not a library for NodeJS.  It's a separate environment and code
+written for node is unlikely to be compatible.  In particular SlimerJS does
 not expose a Common JS package loader.
 
-This is an _NPM wrapper_ and can be used to conveniently make Phantom available
+This is an _NPM wrapper_ and can be used to conveniently make Slimer available
 It is not a Node JS wrapper.
 
-I have had reasonable experiences writing standalone Phantom scripts which I
-then drive from within a node program by spawning phantom in a child process.
+I have had reasonable experiences writing standalone Slimer scripts which I
+then drive from within a node program by spawning slimer in a child process.
 
-Read the PhantomJS FAQ for more details: http://phantomjs.org/faq.html
+Read the SlimerJS FAQ for more details: http://slimerjs.org/faq.html
 
 ### Linux Note
 
-An extra note on Linux usage, from the PhantomJS download page:
+An extra note on Linux usage, from the SlimerJS download page:
 
  > This package is built on CentOS 5.8. It should run successfully on Lucid or
  > more modern systems (including other distributions). There is no requirement
@@ -98,7 +98,7 @@ Contributing
 ------------
 
 Questions, comments, bug reports, and pull requests are all welcome.  Submit them at
-[the project on GitHub](https://github.com/Obvious/phantomjs/).  If you haven't contributed to an
+[the project on GitHub](https://github.com/Obvious/slimerjs/).  If you haven't contributed to an
 [Obvious](http://github.com/Obvious/) project before please head over to the
 [Open Source Project](https://github.com/Obvious/open-source#note-to-external-contributors) and fill
 out an OCLA (it should be pretty painless).
