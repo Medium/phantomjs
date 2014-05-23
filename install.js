@@ -10,18 +10,18 @@ var AdmZip = require('adm-zip')
 var cp = require('child_process')
 var fs = require('fs')
 var helper = require('./lib/phantomjs')
-var http = require('http')
 var kew = require('kew')
+var mkdirp = require('mkdirp')
 var ncp = require('ncp')
 var npmconf = require('npmconf')
-var mkdirp = require('mkdirp')
 var path = require('path')
+var request = require('request')
 var rimraf = require('rimraf').sync
 var url = require('url')
 var util = require('util')
 var which = require('which')
 
-var cdnUrl = process.env.PHANTOMJS_CDNURL || 'http://cdn.bitbucket.org/ariya/phantomjs/downloads'
+var cdnUrl = process.env.PHANTOMJS_CDNURL || 'https://bitbucket.org/ariya/phantomjs/downloads'
 var downloadUrl = cdnUrl + '/phantomjs-' + helper.version + '-'
 
 var originalPath = process.env.PATH
@@ -116,10 +116,10 @@ whichDeferred.promise
         path.join(pkgPath, 'bin' ,'phantomjs')
     var relativeLocation = path.relative(libPath, location)
     writeLocationFile(relativeLocation)
-    
+
     // Ensure executable is executable by all users
     fs.chmodSync(location, '755')
-    
+
     console.log('Done. Phantomjs binary available at', location)
     exit(0)
   })
@@ -178,25 +178,30 @@ function findSuitableTempDirectory(npmConf) {
 
 
 function getRequestOptions(conf) {
-  var proxyUrl = conf.get('http-proxy') || conf.get('proxy')
+  var options = {
+    uri: downloadUrl,
+    encoding: null, // Get response as a buffer
+    followRedirect: true // The default download path redirects to a CDN URL.
+  }
 
+  var proxyUrl = conf.get('http-proxy') || conf.get('proxy')
   if (proxyUrl) {
     console.log('Using proxy ' + proxyUrl)
-    var options = url.parse(proxyUrl)
-    options.path = downloadUrl
-    options.headers = { Host: url.parse(downloadUrl).host }
-    // If going through proxy, spoof the User-Agent, since may commerical proxies block blank or unknown agents in headers
-    options.headers['User-Agent'] = 'curl/7.21.4 (universal-apple-darwin11.0) libcurl/7.21.4 OpenSSL/0.9.8r zlib/1.2.5'
+    var proxy = url.parse(proxyUrl)
+
     // Turn basic authorization into proxy-authorization.
-    if (options.auth) {
-      options.headers['Proxy-Authorization'] = 'Basic ' + new Buffer(options.auth).toString('base64')
-      delete options.auth
+    if (proxy.auth) {
+      options.headers['Proxy-Authorization'] = 'Basic ' + new Buffer(proxy.auth).toString('base64')
+      delete proxy.auth
     }
 
-    return options
-  } else {
-    return url.parse(downloadUrl)
+    options.proxy = url.format(proxy)
+
+    // If going through proxy, spoof the User-Agent, since may commerical proxies block blank or unknown agents in headers
+    options.headers['User-Agent'] = 'curl/7.21.4 (universal-apple-darwin11.0) libcurl/7.21.4 OpenSSL/0.9.8r zlib/1.2.5'
   }
+
+  return options
 }
 
 
@@ -208,34 +213,30 @@ function requestBinary(requestOptions, filePath) {
   var writePath = filePath + '-download-' + Date.now()
   var outFile = fs.openSync(writePath, 'w')
 
-  var client = http.get(requestOptions, function (response) {
-    var status = response.statusCode
-    console.log('Receiving...')
+  console.log('Receiving...')
+  request(requestOptions, function (error, response, body) {
+    if (!error && response.statusCode === 200) {
+      fs.writeFileSync(writePath, body)
+      console.log('Received ' + Math.floor(body.length / 1024) + 'K total.')
+      fs.renameSync(writePath, filePath)
+      deferred.resolve(filePath)
 
-    if (status === 200) {
-      response.addListener('data',   function (data) {
-        fs.writeSync(outFile, data, 0, data.length, null)
-        count += data.length
-        if ((count - notifiedCount) > 800000) {
-          console.log('Received ' + Math.floor(count / 1024) + 'K...')
-          notifiedCount = count
-        }
-      })
-
-      response.addListener('end',   function () {
-        console.log('Received ' + Math.floor(count / 1024) + 'K total.')
-        fs.closeSync(outFile)
-        fs.renameSync(writePath, filePath)
-        deferred.resolve(filePath)
-      })
-
-    } else {
-      client.abort()
+    } else if (response) {
       console.error('Error requesting archive.\n' +
-          'Status: ' + status + '\n' +
+          'Status: ' + response.statusCode + '\n' +
           'Request options: ' + JSON.stringify(requestOptions, null, 2) + '\n' +
           'Response headers: ' + JSON.stringify(response.headers, null, 2) + '\n' +
-          'Make sure your network and proxy settings are correct.')
+          'Make sure your network and proxy settings are correct.\n\n' +
+          'If you continue to have issues, please report this full log at ' +
+          'https://github.com/Medium/phantomjs')
+      exit(1)
+    } else if (error) {
+      console.error('Error making request.\n' + error.stack + '\n\n' +
+          'Please report this full log at https://github.com/Medium/phantomjs')
+      exit(1)
+    } else {
+      console.error('Something unexpected happened, please report this full ' +
+          'log at https://github.com/Medium/phantomjs')
       exit(1)
     }
   })
@@ -264,7 +265,7 @@ function extractDownload(filePath) {
       zip.extractAllTo(extractedPath, true)
       deferred.resolve(extractedPath)
     } catch (err) {
-      console.error('Error extracting archive')
+      console.error('Error extracting zip')
       deferred.reject(err)
     }
 
