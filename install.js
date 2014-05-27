@@ -203,6 +203,7 @@ function getRequestOptions(conf) {
   }
 
   options.rejectUnauthorized = conf.get('strict-ssl');
+  console.log('strict-ssl: ' + conf.get('strict-ssl'));
 
   return options
 }
