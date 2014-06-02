@@ -190,8 +190,10 @@ function getRequestOptions(conf) {
 
     // Print using proxy
     var proxy = url.parse(proxyUrl)
-    // Mask password
-    proxy.auth = proxy.auth.replace(/:.*$/, ':******')
+    if(proxy.auth) {
+      // Mask password
+      proxy.auth = proxy.auth.replace(/:.*$/, ':******')
+    }
     console.log('Using proxy ' + url.format(proxy))
 
     // Enable proxy
