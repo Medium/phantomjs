@@ -187,16 +187,15 @@ function getRequestOptions(conf) {
 
   var proxyUrl = conf.get('http-proxy') || conf.get('proxy')
   if (proxyUrl) {
-    console.log('Using proxy ' + proxyUrl)
+
+    // Print using proxy
     var proxy = url.parse(proxyUrl)
+    // Mask password
+    proxy.auth = proxy.auth.replace(/:.*$/, ':******')
+    console.log('Using proxy ' + url.format(proxy))
 
-    // Turn basic authorization into proxy-authorization.
-    if (proxy.auth) {
-      options.headers['Proxy-Authorization'] = 'Basic ' + new Buffer(proxy.auth).toString('base64')
-      delete proxy.auth
-    }
-
-    options.proxy = url.format(proxy)
+    // Enable proxy
+    options.proxy = proxyUrl
 
     // If going through proxy, spoof the User-Agent, since may commerical proxies block blank or unknown agents in headers
     options.headers['User-Agent'] = 'curl/7.21.4 (universal-apple-darwin11.0) libcurl/7.21.4 OpenSSL/0.9.8r zlib/1.2.5'
