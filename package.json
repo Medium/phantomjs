@@ -4,9 +4,9 @@
   "keywords": [
     "slimerjs",
     "headless",
-    "webkit"
+    "gecko"
   ],
-  "description": "Headless WebKit with JS API",
+  "description": "Headless Gecko with JS API",
   "homepage": "https://github.com/graingert/slimerjs",
   "repository": {
     "type": "git",
