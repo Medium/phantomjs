@@ -86,16 +86,6 @@ then drive from within a node program by spawning slimer in a child process.
 
 Read the SlimerJS FAQ for more details: http://slimerjs.org/faq.html
 
-### Linux Note
-
-An extra note on Linux usage, from the SlimerJS download page:
-
- > This package is built on CentOS 5.8. It should run successfully on Lucid or
- > more modern systems (including other distributions). There is no requirement
- > to install Qt, WebKit, or any other libraries. It is however expected that
- > some base libraries necessary for rendering (FreeType, Fontconfig) and the
- > basic font files are available in the system.
-
 Contributing
 ------------
 
