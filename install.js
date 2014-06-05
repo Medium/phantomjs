@@ -21,7 +21,7 @@ var url = require('url')
 var util = require('util')
 var which = require('which')
 
-var downloadUrl = 'http://download.slimerjs.org/v0.9/'+ helper.version +'/slimerjs-'+ helper.version +'-'
+var downloadUrl = 'http://download.slimerjs.org/releases/'+ helper.version +'/slimerjs-'+ helper.version +'-'
 
 var originalPath = process.env.PATH
 
@@ -116,10 +116,10 @@ whichDeferred.promise
         path.join(pkgPath, 'slimerjs')
     var relativeLocation = path.relative(libPath, location)
     writeLocationFile(relativeLocation)
-    
+
     // Ensure executable is executable by all users
     fs.chmodSync(location, '755')
-    
+
     console.log('Done. Slimerjs binary available at', location)
     exit(0)
   })
