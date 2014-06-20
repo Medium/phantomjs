@@ -217,8 +217,9 @@ function requestBinary(requestOptions, filePath) {
   var outFile = fs.openSync(writePath, 'w')
 
   console.log('Receiving...')
-  var bar = null;
+  var bar = null
   requestProgress(request(requestOptions, function (error, response, body) {
+    console.log('');
     if (!error && response.statusCode === 200) {
       fs.writeFileSync(writePath, body)
       console.log('Received ' + Math.floor(body.length / 1024) + 'K total.')
@@ -245,10 +246,10 @@ function requestBinary(requestOptions, filePath) {
     }
   })).on('progress', function (state) {
     if (!bar) {
-      bar = new progress('[:bar] :percent :etas', {total: state.total, width: 40});
+      bar = new progress('  [:bar] :percent :etas', {total: state.total, width: 40})
     }
-    bar.curr = state.received;
-    bar.tick(0);
+    bar.curr = state.received
+    bar.tick(0)
   })
 
   return deferred.promise
