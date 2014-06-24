@@ -58,11 +58,11 @@ whichDeferred.promise
   .then(function (stdout) {
     var version = stdout.trim()
     if (helper.version == version) {
-      // This makes sure that the binary isn't actually the global             
-      // npm include file, which is what gets passed to install.js             
-      // when the npm-link command is called.                                  
+      // This makes sure that the binary isn't actually the global npm include
+      // file, which is what gets passed to install.js when the npm-link command
+      // is called.
       // See pull request #184: https://github.com/Medium/phantomjs/pull/184
-      if(phantomPath.indexOf(path.join('npm','phantomjs')) === -1) {
+      if (phantomPath.indexOf(path.join('npm','phantomjs')) === -1) {
         writeLocationFile(phantomPath);
         console.log('PhantomJS is already installed at', phantomPath + '.');
       } else {
