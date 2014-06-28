@@ -195,7 +195,7 @@ function getRequestOptions(conf) {
     headers: {}
   }
 
-  var proxyUrl = conf.get('http-proxy') || conf.get('proxy')
+  var proxyUrl = conf.get('https-proxy') || conf.get('http-proxy') || conf.get('proxy')
   if (proxyUrl) {
 
     // Print using proxy
