@@ -6,6 +6,8 @@
 
 'use strict'
 
+var requestProgress = require('request-progress')
+var progress = require('progress')
 var AdmZip = require('adm-zip')
 var cp = require('child_process')
 var fs = require('fs')
@@ -224,7 +226,9 @@ function requestBinary(requestOptions, filePath) {
   var outFile = fs.openSync(writePath, 'w')
 
   console.log('Receiving...')
-  request(requestOptions, function (error, response, body) {
+  var bar = null
+  requestProgress(request(requestOptions, function (error, response, body) {
+    console.log('');
     if (!error && response.statusCode === 200) {
       fs.writeFileSync(writePath, body)
       console.log('Received ' + Math.floor(body.length / 1024) + 'K total.')
@@ -249,6 +253,12 @@ function requestBinary(requestOptions, filePath) {
           'log at https://github.com/Medium/phantomjs')
       exit(1)
     }
+  })).on('progress', function (state) {
+    if (!bar) {
+      bar = new progress('  [:bar] :percent :etas', {total: state.total, width: 40})
+    }
+    bar.curr = state.received
+    bar.tick(0)
   })
 
   return deferred.promise
