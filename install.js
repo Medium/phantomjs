@@ -38,6 +38,17 @@ var pkgPath = path.join(libPath, 'phantom')
 var phantomPath = null
 var tmpPath = null
 
+// If the user manually installed PhantomJS, we want
+// to use the existing version.
+//
+// Do not re-use a manually-installed PhantomJS with
+// a different version.
+//
+// Do not re-use an npm-installed PhantomJS, because
+// that can lead to weird circular dependencies between
+// local versions and global versions.
+// https://github.com/Obvious/phantomjs/issues/85
+// https://github.com/Medium/phantomjs/pull/184
 var whichDeferred = kew.defer()
 which('phantomjs', whichDeferred.makeNodeResolver())
 whichDeferred.promise
@@ -46,11 +57,11 @@ whichDeferred.promise
 
     // Horrible hack to avoid problems during global install. We check to see if
     // the file `which` found is our own bin script.
-    // See: https://github.com/Obvious/phantomjs/issues/85
-    if (/NPM_INSTALL_MARKER/.test(fs.readFileSync(phantomPath, 'utf8'))) {
+    var contents = fs.readFileSync(phantomPath, 'utf8')
+    if (/NPM_INSTALL_MARKER/.test(contents) ||
+        /node_modules/.test(contents)) {
       console.log('Looks like an `npm install -g`; unable to check for already installed version.')
       throw new Error('Global install')
-
     } else {
       var checkVersionDeferred = kew.defer()
       cp.execFile(phantomPath, ['--version'], checkVersionDeferred.makeNodeResolver())
@@ -60,16 +71,8 @@ whichDeferred.promise
   .then(function (stdout) {
     var version = stdout.trim()
     if (helper.version == version) {
-      // This makes sure that the binary isn't actually the global npm include
-      // file, which is what gets passed to install.js when the npm-link command
-      // is called.
-      // See pull request #184: https://github.com/Medium/phantomjs/pull/184
-      if (phantomPath.indexOf(path.join('npm','phantomjs')) === -1) {
-        writeLocationFile(phantomPath);
-        console.log('PhantomJS is already installed at', phantomPath + '.');
-      } else {
-        console.log('PhantomJS is already installed.');
-      }
+      writeLocationFile(phantomPath);
+      console.log('PhantomJS is already installed at', phantomPath + '.')
       exit(0)
 
     } else {
