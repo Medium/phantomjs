@@ -199,7 +199,8 @@ function getRequestOptions(conf) {
     uri: downloadUrl,
     encoding: null, // Get response as a buffer
     followRedirect: true, // The default download path redirects to a CDN URL.
-    headers: {}
+    headers: {},
+    strictSSL: conf.get('strict-ssl')
   }
 
   var proxyUrl = conf.get('https-proxy') || conf.get('http-proxy') || conf.get('proxy')
