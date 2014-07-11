@@ -17,13 +17,13 @@ node ./install.js
 ```
 
 To use a mirror of the phantomjs binaries, set `$PHANTOMJS_CDNURL`,
-default is `http://cdn.bitbucket.org/ariya/phantomjs/downloads`
+default is `https://bitbucket.org/ariya/phantomjs/downloads`
 
 ```shell
 PHANTOMJS_CDNURL=http://cnpmjs.org/downloads npm install phantomjs
 ```
 
-What this is really doing is just grabbing a particular "blessed" (by
+What this installer is really doing is just grabbing a particular "blessed" (by
 this module) version of Phantom. As new versions of Phantom are released
 and vetted, this module will be updated accordingly.
 
@@ -100,6 +100,32 @@ An extra note on Linux usage, from the PhantomJS download page:
  > to install Qt, WebKit, or any other libraries. It is however expected that
  > some base libraries necessary for rendering (FreeType, Fontconfig) and the
  > basic font files are available in the system.
+
+Troubleshooting
+---------------
+
+##### Installation fails with `Error: read ECONNRESET` or `Error: connect ETIMEDOUT`
+
+This error means that something went wront with your internet connection, and the installer
+was not able to download the PhantomJS binary for your platform. Please try again.
+
+##### I tried again, but I get `ECONNRESET` or `ETIMEDOUT` consistently.
+
+Do you live in China, or a country with an authoritarian government? We've seen problems where
+the GFW or local ISP blocks bitbucket, preventing the installer from downloading the binary.
+
+Try visiting the [the download page](http://cdn.bitbucket.org/ariya/phantomjs/downloads) manually.
+If that page is blocked, you can try using a different CDN with the `PHANTOMJS_CDNURL`
+env variable described above. You can also try installing PhantomJS manually, and putting it
+on PATH, and the installer will try to use the manually-installed binaries.
+
+##### I'm on Debian or Ubuntu, and the installer failed because it couldn't find `node`
+
+Some Linux distros tried to rename `node` to `nodejs` due to a package
+conflict. This is a non-portable change, and we do not try to support this. The
+[official documentation](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint-elementary-os)
+recommends that you symlink `node` to `nodejs` on those platforms, or many
+NodeJS programs won't work properly.
 
 Contributing
 ------------
