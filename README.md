@@ -116,8 +116,24 @@ the GFW or local ISP blocks bitbucket, preventing the installer from downloading
 
 Try visiting the [the download page](http://cdn.bitbucket.org/ariya/phantomjs/downloads) manually.
 If that page is blocked, you can try using a different CDN with the `PHANTOMJS_CDNURL`
-env variable described above. You can also try installing PhantomJS manually, and putting it
-on PATH, and the installer will try to use the manually-installed binaries.
+env variable described above.
+
+##### I am behind a corporate proxy that uses self-signed SSL certificates to intercept encrypted traffic.
+
+You can tell NPM and the PhantomJS installer to skip validation of ssl keys with NPM's 
+[strict-ssl](https://www.npmjs.org/doc/misc/npm-config.html#strict-ssl) setting:
+
+```
+npm set strict-ssl false
+```
+
+WARNING: Turning off `strict-ssl` leaves you vulnerable to attackers reading
+your encrypted traffic, so run this at your own risk!
+
+##### I tried everything, but my network is b0rked. What do I do?
+
+If you install PhantomJS manually, and put it on PATH, the installer will try to
+use the manually-installed binaries.
 
 ##### I'm on Debian or Ubuntu, and the installer failed because it couldn't find `node`
 
