@@ -6,7 +6,7 @@
 var childProcess = require('child_process')
 var fs = require('fs')
 var path = require('path')
-var phantomjs = require('../lib/phantomjs')
+var phantomjs = require('../')
 
 
 exports.testDownload = function (test) {
@@ -44,23 +44,10 @@ exports.testPhantomExitCode = function (test) {
 exports.testBinFile = function (test) {
   test.expect(1)
 
-  var binPath = process.platform === 'win32' ? 
-      path.join(__dirname, '..', 'lib', 'phantom', 'phantomjs.exe') :
-      path.join(__dirname, '..', 'bin', 'phantomjs')
+  var binPath = phantomjs.path;
 
   childProcess.execFile(binPath, ['--version'], function (err, stdout, stderr) {
     test.equal(phantomjs.version, stdout.trim(), 'Version should be match')
     test.done()
   })
-}
-
-
-exports.testCleanPath = function (test) {
-  test.expect(5)
-  test.equal('/Users/dan/bin', phantomjs.cleanPath('/Users/dan/bin:./bin'))
-  test.equal('/Users/dan/bin:/usr/bin', phantomjs.cleanPath('/Users/dan/bin:./bin:/usr/bin'))
-  test.equal('/usr/bin', phantomjs.cleanPath('./bin:/usr/bin'))
-  test.equal('', phantomjs.cleanPath('./bin'))
-  test.equal('/Work/bin:/usr/bin', phantomjs.cleanPath('/Work/bin:/Work/phantomjs/node_modules/.bin:/usr/bin'))
-  test.done()
 }

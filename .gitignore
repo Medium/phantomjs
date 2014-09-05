@@ -1,5 +1,3 @@
 /node_modules
-/lib/phantom
-/lib/location.js
-/tmp
+/vendor
 npm-debug.log
