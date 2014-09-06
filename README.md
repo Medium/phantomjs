@@ -13,7 +13,7 @@ npm install phantomjs
 Or grab the source and
 
 ```shell
-node ./install.js
+node ./lib/install.js
 ```
 
 To use a mirror of the phantomjs binaries, set `$PHANTOMJS_CDNURL`,
@@ -120,7 +120,7 @@ env variable described above.
 
 ##### I am behind a corporate proxy that uses self-signed SSL certificates to intercept encrypted traffic.
 
-You can tell NPM and the PhantomJS installer to skip validation of ssl keys with NPM's 
+You can tell NPM and the PhantomJS installer to skip validation of ssl keys with NPM's
 [strict-ssl](https://www.npmjs.org/doc/misc/npm-config.html#strict-ssl) setting:
 
 ```

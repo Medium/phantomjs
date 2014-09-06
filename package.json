@@ -30,25 +30,17 @@
       "web": "http://pupius.co.uk/"
     }
   ],
-  "main": "lib/phantomjs",
+  "main": "index.js",
   "bin": {
     "phantomjs": "./bin/phantomjs"
   },
   "scripts": {
-    "install": "node install.js",
+    "postinstall": "node lib/install.js",
     "test": "nodeunit --reporter=minimal test/tests.js"
   },
   "dependencies": {
-    "adm-zip": "0.2.1",
-    "kew": "~0.1.7",
-    "ncp": "0.4.2",
-    "npmconf": "0.0.24",
-    "mkdirp": "0.3.5",
-    "progress": "^1.1.5",
-    "request": "^2.40.0",
-    "request-progress": "^0.3.1",
-    "rimraf": "~2.2.2",
-    "which": "~1.0.5"
+    "bin-wrapper": "^1.0.1",
+    "log-symbols": "^1.0.0"
   },
   "devDependencies": {
     "nodeunit": "~0.7.4"
