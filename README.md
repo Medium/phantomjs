@@ -70,11 +70,9 @@ childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
 Versioning
 ----------
 
-The NPM package version tracks the version of PhantomJS that will be installed,
-with an additional build number that is used for revisions to the installer.
-
-As such `1.8.0-1` and `1.8.0-2` will both install PhantomJs 1.8 but the latter
-has newer changes to the installer.
+The major and minor number tracks the version of PhantomJS that will be
+installed. The patch number is incremented when there is either an installer
+update or a patch build of the phantom binary.
 
 A Note on PhantomJS
 -------------------
