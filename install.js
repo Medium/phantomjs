@@ -252,6 +252,9 @@ function requestBinary(requestOptions, filePath) {
           'If you continue to have issues, please report this full log at ' +
           'https://github.com/Medium/phantomjs')
       exit(1)
+    } else if (error && error.stack && error.stack.indexOf('SELF_SIGNED_CERT_IN_CHAIN') != -1) {
+      console.error('Error making request, SELF_SIGNED_CERT_IN_CHAIN. Please read https://github.com/Medium/phantomjs#i-am-behind-a-corporate-proxy-that-uses-self-signed-ssl-certificates-to-intercept-encrypted-traffic')
+      exit(1)
     } else if (error) {
       console.error('Error making request.\n' + error.stack + '\n\n' +
           'Please report this full log at https://github.com/Medium/phantomjs')
