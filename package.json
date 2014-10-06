@@ -1,6 +1,6 @@
 {
   "name": "slimerjs",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "keywords": [
     "slimerjs",
     "headless",
@@ -28,6 +28,11 @@
       "name": "Thomas Grainger",
       "email": "tagrain@gmail.com",
       "web": "http://graingert.co.uk/"
+    },
+    {
+      "name": "David Hanskopeit",
+      "email": "david@monkey-works.de",
+      "web": "http://www.monkey-works.de/"
     }
   ],
   "main": "lib/slimerjs",
