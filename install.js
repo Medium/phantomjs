@@ -18,7 +18,7 @@ var ncp = require('ncp')
 var npmconf = require('npmconf')
 var path = require('path')
 var request = require('request')
-var rimraf = require('rimraf').sync
+var rimraf = require('rimraf')
 var url = require('url')
 var util = require('util')
 var which = require('which')
@@ -316,27 +316,29 @@ function extractDownload(filePath) {
 
 
 function copyIntoPlace(extractedPath, targetPath) {
-  rimraf(targetPath)
-
-  var deferred = kew.defer()
-  // Look for the extracted directory, so we can rename it.
-  var files = fs.readdirSync(extractedPath)
-  for (var i = 0; i < files.length; i++) {
-    var file = path.join(extractedPath, files[i])
-    if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
-      console.log('Copying extracted folder', file, '->', targetPath)
-      ncp(file, targetPath, deferred.makeNodeResolver())
-      break
+  console.log('Removing', targetPath)
+  return kew.nfcall(rimraf, targetPath).then(function () {
+    // Look for the extracted directory, so we can rename it.
+    var files = fs.readdirSync(extractedPath)
+    for (var i = 0; i < files.length; i++) {
+      var file = path.join(extractedPath, files[i])
+      if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
+        console.log('Copying extracted folder', file, '->', targetPath)
+        return kew.nfcall(ncp, file, targetPath)
+      }
     }
-  }
 
-  // Cleanup extracted directory after it's been copied
-  return deferred.promise.then(function() {
-    try {
-      return rimraf(extractedPath)
-    } catch (e) {
+    console.log('Could not find extracted file', files)
+    throw new Error('Could not find extracted file')
+  })
+  .then(function () {
+    // Cleanup extracted directory after it's been copied
+    console.log('Removing', extractedPath)
+    return kew.nfcall(rimraf, extractedPath).fail(function (e) {
+      // Swallow the error quietly.
+      console.warn(e)
       console.warn('Unable to remove temporary files at "' + extractedPath +
           '", see https://github.com/Obvious/phantomjs/issues/108 for details.')
-    }
-  });
+    })
+  })
 }

@@ -47,7 +47,7 @@
     "progress": "1.1.8",
     "request": "2.42.0",
     "request-progress": "0.3.1",
-    "rimraf": "~2.2.2",
+    "rimraf": "~2.2.8",
     "which": "~1.0.5"
   },
   "devDependencies": {
