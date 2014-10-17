@@ -176,9 +176,14 @@ function findSuitableTempDirectory(npmConf) {
   var now = Date.now()
   var candidateTmpDirs = [
     process.env.TMPDIR || process.env.TEMP || '/tmp',
-    npmConf.get('tmp'),
-    path.join(process.cwd(), 'tmp')
+    npmConf.get('tmp')
   ]
+  
+  // push local temp to the top of the list if it exists
+  var localTmp = path.join(process.cwd(), 'tmp')
+  if (fs.exists(localTmp)) {
+    candidateTmpDirs.unshift(localTmp)
+  }
 
   for (var i = 0; i < candidateTmpDirs.length; i++) {
     var candidatePath = path.join(candidateTmpDirs[i], 'phantomjs')
