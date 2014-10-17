@@ -28,6 +28,16 @@ var downloadUrl = cdnUrl + '/phantomjs-' + helper.version + '-'
 
 var originalPath = process.env.PATH
 
+// If the process exits without going through exit(), then we did not complete.
+var validExit = false
+
+process.on('exit', function () {
+  if (!validExit) {
+    console.log('Install exited unexpectedly')
+    exit(1)
+  }
+})
+
 // NPM adds bin directories to the path, which will cause `which` to find the
 // bin for this package not the actual phantomjs bin.  Also help out people who
 // put ./bin on their path
@@ -155,8 +165,8 @@ function writeLocationFile(location) {
       'module.exports.location = "' + location + '"')
 }
 
-
 function exit(code) {
+  validExit = true
   process.env.PATH = originalPath
   process.exit(code || 0)
 }
