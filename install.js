@@ -224,18 +224,10 @@ function getRequestOptions(conf) {
 
   // use certificate authority settings from npm
   // if they exist
-  var ca;
+  var ca = conf.get('ca')
 
-  if(conf.get('cafile')) {
-   console.log('Using cafile: ' + conf.get('cafile'));
-   ca = fs.readFileSync(conf.get('cafile'));
-  }
-  else if (conf.get('ca')) {
+  if (ca) {
    console.log('Using npm ca option');
-   ca = conf.get('ca'); 
-  }
-
-  if(ca) {
    options.ca = ca;
   }
 
