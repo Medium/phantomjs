@@ -1,6 +1,6 @@
 {
   "name": "phantomjs",
-  "version": "1.9.11",
+  "version": "1.9.12",
   "keywords": [
     "phantomjs",
     "headless",
@@ -41,7 +41,7 @@
   "dependencies": {
     "adm-zip": "0.4.4",
     "kew": "0.4.0",
-    "ncp": "0.6.0",
+    "ncp": "~1.0.1",
     "npmconf": "2.0.9",
     "mkdirp": "0.5.0",
     "progress": "1.1.8",
