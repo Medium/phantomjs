@@ -205,6 +205,7 @@ function findSuitableTempDirectory(npmConf) {
 
 
 function getRequestOptions(conf) {
+
   var options = {
     uri: downloadUrl,
     encoding: null, // Get response as a buffer
@@ -229,6 +230,15 @@ function getRequestOptions(conf) {
 
     // If going through proxy, spoof the User-Agent, since may commerical proxies block blank or unknown agents in headers
     options.headers['User-Agent'] = 'curl/7.21.4 (universal-apple-darwin11.0) libcurl/7.21.4 OpenSSL/0.9.8r zlib/1.2.5'
+  }
+
+  // use certificate authority settings from npm
+  // if they exist
+  var ca = conf.get('ca')
+
+  if (ca) {
+   console.log('Using npm ca option');
+   options.ca = ca;
   }
 
   return options
