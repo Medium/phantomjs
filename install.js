@@ -18,7 +18,7 @@ var ncp = require('ncp')
 var npmconf = require('npmconf')
 var path = require('path')
 var request = require('request')
-var rimraf = require('rimraf').sync
+var rimraf = require('rimraf')
 var url = require('url')
 var util = require('util')
 var which = require('which')
@@ -27,6 +27,16 @@ var cdnUrl = process.env.PHANTOMJS_CDNURL || 'https://bitbucket.org/ariya/phanto
 var downloadUrl = cdnUrl + '/phantomjs-' + helper.version + '-'
 
 var originalPath = process.env.PATH
+
+// If the process exits without going through exit(), then we did not complete.
+var validExit = false
+
+process.on('exit', function () {
+  if (!validExit) {
+    console.log('Install exited unexpectedly')
+    exit(1)
+  }
+})
 
 // NPM adds bin directories to the path, which will cause `which` to find the
 // bin for this package not the actual phantomjs bin.  Also help out people who
@@ -155,8 +165,8 @@ function writeLocationFile(location) {
       'module.exports.location = "' + location + '"')
 }
 
-
 function exit(code) {
+  validExit = true
   process.env.PATH = originalPath
   process.exit(code || 0)
 }
@@ -165,8 +175,8 @@ function exit(code) {
 function findSuitableTempDirectory(npmConf) {
   var now = Date.now()
   var candidateTmpDirs = [
-    process.env.TMPDIR || process.env.TEMP || '/tmp',
-    npmConf.get('tmp'),
+    process.env.TMPDIR || process.env.TEMP || npmConf.get('tmp'),
+    '/tmp',
     path.join(process.cwd(), 'tmp')
   ]
 
@@ -262,6 +272,9 @@ function requestBinary(requestOptions, filePath) {
           'If you continue to have issues, please report this full log at ' +
           'https://github.com/Medium/phantomjs')
       exit(1)
+    } else if (error && error.stack && error.stack.indexOf('SELF_SIGNED_CERT_IN_CHAIN') != -1) {
+      console.error('Error making request, SELF_SIGNED_CERT_IN_CHAIN. Please read https://github.com/Medium/phantomjs#i-am-behind-a-corporate-proxy-that-uses-self-signed-ssl-certificates-to-intercept-encrypted-traffic')
+      exit(1)
     } else if (error) {
       console.error('Error making request.\n' + error.stack + '\n\n' +
           'Please report this full log at https://github.com/Medium/phantomjs')
@@ -323,27 +336,29 @@ function extractDownload(filePath) {
 
 
 function copyIntoPlace(extractedPath, targetPath) {
-  rimraf(targetPath)
-
-  var deferred = kew.defer()
-  // Look for the extracted directory, so we can rename it.
-  var files = fs.readdirSync(extractedPath)
-  for (var i = 0; i < files.length; i++) {
-    var file = path.join(extractedPath, files[i])
-    if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
-      console.log('Copying extracted folder', file, '->', targetPath)
-      ncp(file, targetPath, deferred.makeNodeResolver())
-      break
+  console.log('Removing', targetPath)
+  return kew.nfcall(rimraf, targetPath).then(function () {
+    // Look for the extracted directory, so we can rename it.
+    var files = fs.readdirSync(extractedPath)
+    for (var i = 0; i < files.length; i++) {
+      var file = path.join(extractedPath, files[i])
+      if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
+        console.log('Copying extracted folder', file, '->', targetPath)
+        return kew.nfcall(ncp, file, targetPath)
+      }
     }
-  }
 
-  // Cleanup extracted directory after it's been copied
-  return deferred.promise.then(function() {
-    try {
-      return rimraf(extractedPath)
-    } catch (e) {
+    console.log('Could not find extracted file', files)
+    throw new Error('Could not find extracted file')
+  })
+  .then(function () {
+    // Cleanup extracted directory after it's been copied
+    console.log('Removing', extractedPath)
+    return kew.nfcall(rimraf, extractedPath).fail(function (e) {
+      // Swallow the error quietly.
+      console.warn(e)
       console.warn('Unable to remove temporary files at "' + extractedPath +
           '", see https://github.com/Obvious/phantomjs/issues/108 for details.')
-    }
-  });
+    })
+  })
 }
