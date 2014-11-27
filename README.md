@@ -16,6 +16,16 @@ Or grab the source and
 node ./install.js
 ```
 
+What this installer is really doing is just grabbing a particular "blessed" (by
+this module) version of Phantom. As new versions of Phantom are released
+and vetted, this module will be updated accordingly.
+
+The package has been set up to fetch and run Phantom for MacOS (darwin),
+Linux based platforms (as identified by nodejs), and -- as of version 0.2.0 --
+Windows (thanks to [Domenic Denicola](https://github.com/domenic)).  If you
+spot any platform weirdnesses, let us know or send a patch.
+
+### Custom binaries url
 To use a mirror of the phantomjs binaries use npm config property `phantomjs_cdnurl`.
 Default is `https://bitbucket.org/ariya/phantomjs/downloads`.
 
@@ -29,15 +39,11 @@ Or add property into your `.mpmrc` file (https://www.npmjs.org/doc/files/npmrc.h
 phantomjs_cdnurl=http://cnpmjs.org/downloads
 ```
 
+Another option is to use PATH variable `PHANTOMJS_CDNURL`.
+```shell
+PHANTOMJS_CDNURL=http://cnpmjs.org/downloads npm install phantomjs
+```
 
-What this installer is really doing is just grabbing a particular "blessed" (by
-this module) version of Phantom. As new versions of Phantom are released
-and vetted, this module will be updated accordingly.
-
-The package has been set up to fetch and run Phantom for MacOS (darwin),
-Linux based platforms (as identified by nodejs), and -- as of version 0.2.0 --
-Windows (thanks to [Domenic Denicola](https://github.com/domenic)).  If you
-spot any platform weirdnesses, let us know or send a patch.
 
 Running
 -------
