@@ -16,12 +16,19 @@ Or grab the source and
 node ./install.js
 ```
 
-To use a mirror of the phantomjs binaries, set `$PHANTOMJS_CDNURL`,
-default is `https://bitbucket.org/ariya/phantomjs/downloads`
+To use a mirror of the phantomjs binaries use npm config property `phantomjs_cdnurl`.
+Default is `https://bitbucket.org/ariya/phantomjs/downloads`.
 
 ```shell
-PHANTOMJS_CDNURL=http://cnpmjs.org/downloads npm install phantomjs
+npm install phantomjs --phantomjs_cdnurl=http://cnpmjs.org/downloads
 ```
+
+Or add property into your `.mpmrc` file (https://www.npmjs.org/doc/files/npmrc.html)
+
+```
+phantomjs_cdnurl=http://cnpmjs.org/downloads
+```
+
 
 What this installer is really doing is just grabbing a particular "blessed" (by
 this module) version of Phantom. As new versions of Phantom are released
