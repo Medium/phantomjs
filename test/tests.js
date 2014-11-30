@@ -25,6 +25,8 @@ exports.testSlimerExecutesTestScript = function (test) {
   ]
 
   childProcess.execFile(slimerjs.path, childArgs, function (err, stdout, stderr) {
+    console.log([stdout, stderr]);
+
     var value = (stdout.indexOf('msec') !== -1)
     test.ok(value, 'Test script should have executed and returned run time')
     test.done()
