@@ -3,3 +3,4 @@
 /lib/location.js
 /tmp
 npm-debug.log
+*.swp
