@@ -17,17 +17,21 @@ exports.testDownload = function (test) {
 
 
 exports.testSlimerExecutesTestScript = function (test) {
-  test.expect(1)
+  test.expect(2)
 
   var childArgs = [
+    // run SlimerJS using virtual frame buffer (xvfb)
+    '--auto-servernum',
+    '--server-num=1',
+    slimerjs.path,
+    // SlimerJS arguments
     path.join(__dirname, 'loadspeed.js'),
     'http://www.google.com/'
   ]
 
-  childProcess.execFile(slimerjs.path, childArgs, function (err, stdout, stderr) {
-    console.log([err, stdout, stderr]);
-
+  childProcess.execFile('xvfb-run', childArgs, function (err, stdout, stderr) {
     var value = (stdout.indexOf('msec') !== -1)
+    test.ok(err === null, 'Test script should complete without errors')
     test.ok(value, 'Test script should have executed and returned run time')
     test.done()
   })
