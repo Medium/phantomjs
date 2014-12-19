@@ -205,12 +205,19 @@ function findSuitableTempDirectory(npmConf) {
 
 
 function getRequestOptions(conf) {
+  var strictSSL = conf.get('strict-ssl')
+  if (process.version == 'v0.10.34') {
+    console.log('Node v0.10.34 detected, turning off strict ssl due to https://github.com/joyent/node/issues/8894')
+    strictSSL = false
+  }
+
+
   var options = {
     uri: downloadUrl,
     encoding: null, // Get response as a buffer
     followRedirect: true, // The default download path redirects to a CDN URL.
     headers: {},
-    strictSSL: conf.get('strict-ssl')
+    strictSSL: strictSSL
   }
 
   var proxyUrl = conf.get('https-proxy') || conf.get('http-proxy') || conf.get('proxy')
