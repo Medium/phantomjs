@@ -117,7 +117,7 @@ Troubleshooting
 
 ##### Installation fails with `Error: read ECONNRESET` or `Error: connect ETIMEDOUT`
 
-This error means that something went wront with your internet connection, and the installer
+This error means that something went wrong with your internet connection, and the installer
 was not able to download the PhantomJS binary for your platform. Please try again.
 
 ##### I tried again, but I get `ECONNRESET` or `ETIMEDOUT` consistently.
