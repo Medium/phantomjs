@@ -33,7 +33,7 @@ Default is `https://bitbucket.org/ariya/phantomjs/downloads`.
 npm install phantomjs --phantomjs_cdnurl=http://cnpmjs.org/downloads
 ```
 
-Or add property into your `.mpmrc` file (https://www.npmjs.org/doc/files/npmrc.html)
+Or add property into your `.npmrc` file (https://www.npmjs.org/doc/files/npmrc.html)
 
 ```
 phantomjs_cdnurl=http://cnpmjs.org/downloads
