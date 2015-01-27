@@ -345,14 +345,4 @@ function copyIntoPlace(extractedPath, targetPath) {
     console.log('Could not find extracted file', files)
     throw new Error('Could not find extracted file')
   })
-  .then(function () {
-    // Cleanup extracted directory after it's been copied
-    console.log('Removing', extractedPath)
-    return kew.nfcall(fs.remove, extractedPath).fail(function (e) {
-      // Swallow the error quietly.
-      console.warn(e)
-      console.warn('Unable to remove temporary files at "' + extractedPath +
-          '", see https://github.com/Obvious/phantomjs/issues/108 for details.')
-    })
-  })
 }
