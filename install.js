@@ -10,11 +10,10 @@ var requestProgress = require('request-progress')
 var progress = require('progress')
 var AdmZip = require('adm-zip')
 var cp = require('child_process')
-var fs = require('fs')
+var fs = require('fs-extra')
 var helper = require('./lib/phantomjs')
 var kew = require('kew')
 var mkdirp = require('mkdirp')
-var ncp = require('ncp')
 var npmconf = require('npmconf')
 var path = require('path')
 var request = require('request')
@@ -341,7 +340,7 @@ function copyIntoPlace(extractedPath, targetPath) {
       var file = path.join(extractedPath, files[i])
       if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
         console.log('Copying extracted folder', file, '->', targetPath)
-        return kew.nfcall(ncp, file, targetPath)
+        return kew.nfcall(fs.move, file, targetPath)
       }
     }
 
