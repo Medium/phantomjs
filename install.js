@@ -10,12 +10,15 @@ var requestProgress = require('request-progress')
 var progress = require('progress')
 var AdmZip = require('adm-zip')
 var cp = require('child_process')
-var fs = require('fs-extra')
+var fs = require('fs')
 var helper = require('./lib/phantomjs')
 var kew = require('kew')
+var mkdirp = require('mkdirp')
+var ncp = require('ncp')
 var npmconf = require('npmconf')
 var path = require('path')
 var request = require('request')
+var rimraf = require('rimraf')
 var url = require('url')
 var util = require('util')
 var which = require('which')
@@ -181,7 +184,7 @@ function findSuitableTempDirectory(npmConf) {
     var candidatePath = path.join(candidateTmpDirs[i], 'phantomjs')
 
     try {
-      fs.mkdirsSync(candidatePath, '0777')
+      mkdirp.sync(candidatePath, '0777')
       // Make double sure we have 0777 permissions; some operating systems
       // default umask does not allow write by default.
       fs.chmodSync(candidatePath, '0777')
@@ -297,7 +300,7 @@ function extractDownload(filePath) {
   var extractedPath = filePath + '-extract-' + Date.now()
   var options = {cwd: extractedPath}
 
-  fs.mkdirsSync(extractedPath, '0777')
+  mkdirp.sync(extractedPath, '0777')
   // Make double sure we have 0777 permissions; some operating systems
   // default umask does not allow write by default.
   fs.chmodSync(extractedPath, '0777')
@@ -331,18 +334,28 @@ function extractDownload(filePath) {
 
 function copyIntoPlace(extractedPath, targetPath) {
   console.log('Removing', targetPath)
-  return kew.nfcall(fs.remove, targetPath).then(function () {
+  return kew.nfcall(rimraf, targetPath).then(function () {
     // Look for the extracted directory, so we can rename it.
     var files = fs.readdirSync(extractedPath)
     for (var i = 0; i < files.length; i++) {
       var file = path.join(extractedPath, files[i])
       if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
         console.log('Copying extracted folder', file, '->', targetPath)
-        return kew.nfcall(fs.move, file, targetPath)
+        return kew.nfcall(ncp, file, targetPath)
       }
     }
 
     console.log('Could not find extracted file', files)
     throw new Error('Could not find extracted file')
+  })
+  .then(function () {
+    // Cleanup extracted directory after it's been copied
+    console.log('Removing', extractedPath)
+    return kew.nfcall(rimraf, extractedPath).fail(function (e) {
+      // Swallow the error quietly.
+      console.warn(e)
+      console.warn('Unable to remove temporary files at "' + extractedPath +
+          '", see https://github.com/Obvious/phantomjs/issues/108 for details.')
+    })
   })
 }
