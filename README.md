@@ -3,6 +3,8 @@ phantomjs
 
 An NPM wrapper for [PhantomJS](http://phantomjs.org/), headless webkit with JS API.
 
+[![Build Status](https://travis-ci.org/Medium/phantomjs.svg?branch=master)](https://travis-ci.org/Medium/phantomjs)
+
 Building and Installing
 -----------------------
 
