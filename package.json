@@ -42,12 +42,10 @@
     "adm-zip": "0.4.4",
     "fs-extra": "^0.15.0",
     "kew": "0.4.0",
-    "mkdirp": "0.5.0",
     "npmconf": "2.0.9",
     "progress": "1.1.8",
     "request": "2.42.0",
     "request-progress": "0.3.1",
-    "rimraf": "~2.2.8",
     "which": "~1.0.5"
   },
   "devDependencies": {
