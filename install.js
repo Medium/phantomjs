@@ -217,6 +217,11 @@ function getRequestOptions(conf) {
     strictSSL: strictSSL
   }
 
+  var cafile = conf.get('cafile')
+  if (cafile) {
+    options['ca'] = fs.readFileSync(cafile)
+  }
+
   var proxyUrl = conf.get('https-proxy') || conf.get('http-proxy') || conf.get('proxy')
   if (proxyUrl) {
 
@@ -267,7 +272,8 @@ function requestBinary(requestOptions, filePath) {
           'https://github.com/Medium/phantomjs')
       exit(1)
     } else if (error && error.stack && error.stack.indexOf('SELF_SIGNED_CERT_IN_CHAIN') != -1) {
-      console.error('Error making request, SELF_SIGNED_CERT_IN_CHAIN. Please read https://github.com/Medium/phantomjs#i-am-behind-a-corporate-proxy-that-uses-self-signed-ssl-certificates-to-intercept-encrypted-traffic')
+      console.error('Error making request, SELF_SIGNED_CERT_IN_CHAIN. Please read ' +
+        'https://github.com/Medium/phantomjs#i-am-behind-a-corporate-proxy-that-uses-self-signed-ssl-certificates-to-intercept-encrypted-traffic')
       exit(1)
     } else if (error) {
       console.error('Error making request.\n' + error.stack + '\n\n' +
