@@ -231,9 +231,8 @@ function getRequestOptions(conf) {
     // Enable proxy
     options.proxy = proxyUrl
 
-    // If going through proxy, spoof the User-Agent, since may commerical proxies block blank or unknown agents in headers
-    var userAgent = conf.get('user-agent') || 'curl/7.21.4 (universal-apple-darwin11.0) libcurl/7.21.4 OpenSSL/0.9.8r zlib/1.2.5'
-    options.headers['User-Agent'] = userAgent
+    // If going through proxy, use the user-agent string from the npm config
+    options.headers['User-Agent'] = conf.get('user-agent')
   }
 
   // Use certificate authority settings from npm
