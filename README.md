@@ -117,6 +117,20 @@ An extra note on Linux usage, from the PhantomJS download page:
 Troubleshooting
 ---------------
 
+##### Installation fails with `spawn ENOENT`
+
+This is NPM's way of telling you that it was not able to start a Node process. It usually means
+Node is not on your PATH, or otherwise not properly installed.
+
+##### Installation fails with `Error: EPERM` or `operation not permitted`
+
+This error means that NPM was not able to install phantomjs to the file system. There are three
+major reasons why this could happen:
+
+- You don't have write access to the installation directory.
+- The permissions in the NPM cache got messed up, and you need to run `npm cache clean` to fix them.
+- You have over-zealous anti-virus software installed, and it's blocking file system writes.
+
 ##### Installation fails with `Error: read ECONNRESET` or `Error: connect ETIMEDOUT`
 
 This error means that something went wrong with your internet connection, and the installer
