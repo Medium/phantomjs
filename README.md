@@ -119,7 +119,7 @@ Troubleshooting
 
 ##### Installation fails with `spawn ENOENT`
 
-This is NPM's way of telling you that it was not able to start a Node process. It usually means
+This is NPM's way of telling you that it was not able to start a `node` process. It usually means
 Node is not on your PATH, or otherwise not properly installed.
 
 ##### Installation fails with `Error: EPERM` or `operation not permitted`
@@ -167,8 +167,8 @@ use the manually-installed binaries.
 Some Linux distros tried to rename `node` to `nodejs` due to a package
 conflict. This is a non-portable change, and we do not try to support this. The
 [official documentation](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint-elementary-os)
-recommends that you symlink `node` to `nodejs` on those platforms, or many
-NodeJS programs won't work properly.
+recommends that you run `apt-get install nodejs-legacy` to symlink `node` to `nodejs` 
+on those platforms, or many NodeJS programs won't work properly.
 
 Contributing
 ------------
