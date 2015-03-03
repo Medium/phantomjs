@@ -252,7 +252,6 @@ function requestBinary(requestOptions, filePath) {
   var count = 0
   var notifiedCount = 0
   var writePath = filePath + '-download-' + Date.now()
-  var outFile = fs.openSync(writePath, 'w')
 
   console.log('Receiving...')
   var bar = null
