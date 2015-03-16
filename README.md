@@ -46,6 +46,12 @@ Another option is to use PATH variable `PHANTOMJS_CDNURL`.
 PHANTOMJS_CDNURL=http://cnpmjs.org/downloads npm install phantomjs
 ```
 
+### Custom PhantomJS version
+A custom version number of Phantom can be used by suppling the following CLI argument
+
+```shell
+npm install phantomjs --phantomjs_version=2.0.0
+```
 
 Running
 -------
