@@ -21,8 +21,8 @@ var util = require('util')
 var which = require('which')
 
 var cdnUrl = process.env.npm_config_phantomjs_cdnurl || process.env.PHANTOMJS_CDNURL ||  'https://bitbucket.org/ariya/phantomjs/downloads'
-var version = process.env.npm_config_phantomjs_version || process.env.PHANTOMJS_VERSION ||  helper.version
-var downloadUrl = cdnUrl + '/phantomjs-' + version + '-'
+var phantomVersion = process.env.npm_config_phantomjs_version || process.env.PHANTOMJS_VERSION ||  helper.version
+var downloadUrl = cdnUrl + '/phantomjs-' + phantomVersion + '-'
 
 var originalPath = process.env.PATH
 
@@ -82,7 +82,7 @@ whichDeferred.promise
   })
   .then(function (stdout) {
     var version = stdout.trim()
-    if (helper.version == version) {
+    if (phantomVersion == version) {
       writeLocationFile(phantomPath);
       console.log('PhantomJS is already installed at', phantomPath + '.')
       exit(0)
@@ -343,7 +343,7 @@ function copyIntoPlace(extractedPath, targetPath) {
     var files = fs.readdirSync(extractedPath)
     for (var i = 0; i < files.length; i++) {
       var file = path.join(extractedPath, files[i])
-      if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
+      if (fs.statSync(file).isDirectory() && file.indexOf(phantomVersion) != -1) {
         console.log('Copying extracted folder', file, '->', targetPath)
         return kew.nfcall(fs.move, file, targetPath)
       }
