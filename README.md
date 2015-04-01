@@ -27,26 +27,6 @@ Linux based platforms (as identified by nodejs), and -- as of version 0.2.0 --
 Windows (thanks to [Domenic Denicola](https://github.com/domenic)).  If you
 spot any platform weirdnesses, let us know or send a patch.
 
-### Custom binaries url
-To use a mirror of the phantomjs binaries use npm config property `phantomjs_cdnurl`.
-Default is `https://bitbucket.org/ariya/phantomjs/downloads`.
-
-```shell
-npm install phantomjs --phantomjs_cdnurl=http://cnpmjs.org/downloads
-```
-
-Or add property into your `.npmrc` file (https://www.npmjs.org/doc/files/npmrc.html)
-
-```
-phantomjs_cdnurl=http://cnpmjs.org/downloads
-```
-
-Another option is to use PATH variable `PHANTOMJS_CDNURL`.
-```shell
-PHANTOMJS_CDNURL=http://cnpmjs.org/downloads npm install phantomjs
-```
-
-
 Running
 -------
 
@@ -89,6 +69,40 @@ The major and minor number tracks the version of PhantomJS that will be
 installed. The patch number is incremented when there is either an installer
 update or a patch build of the phantom binary.
 
+Deciding Where To Get PhantomJS
+-------------------------------
+
+By default, this package will download phantomjs from `https://bitbucket.org/ariya/phantomjs/downloads`.
+This should work fine for most people.
+
+##### Downloading from a custom URL
+
+If bitbucket is down, or the Great Firewall is blocking bitbucket, you may need to use
+a download mirror. To set a mirror, set npm config property `phantomjs_cdnurl`.
+Default is ``.
+
+```shell
+npm install phantomjs --phantomjs_cdnurl=http://cnpmjs.org/downloads
+```
+
+Or add property into your `.npmrc` file (https://www.npmjs.org/doc/files/npmrc.html)
+
+```
+phantomjs_cdnurl=http://cnpmjs.org/downloads
+```
+
+Another option is to use PATH variable `PHANTOMJS_CDNURL`.
+```shell
+PHANTOMJS_CDNURL=http://cnpmjs.org/downloads npm install phantomjs
+```
+
+##### Using PhantomJS from disk
+
+If you plan to install phantomjs many times on a single machine, you can
+install the `phantomjs` binary on PATH. The installer will automatically detect
+and use that for non-global installs.
+
+
 A Note on PhantomJS
 -------------------
 
@@ -119,10 +133,14 @@ Troubleshooting
 
 ##### Installation fails with `spawn ENOENT`
 
-This is NPM's way of telling you that it was not able to start a `node` process. It usually means
-Node is not on your PATH, or otherwise not properly installed.
+This is NPM's way of telling you that it was not able to start a process. It usually means:
 
-##### Installation fails with `Error: EPERM` or `operation not permitted`
+- `node` is not on your PATH, or otherwise not correctly installed.
+- `tar` is not on your PATH. This package expects `tar` on your PATH on Linux-based platforms.
+
+Check your specific error message for more information.
+
+##### Installation fails with `Error: EPERM` or `operation not permitted` or `permission denied`
 
 This error means that NPM was not able to install phantomjs to the file system. There are three
 major reasons why this could happen:
