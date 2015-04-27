@@ -14,14 +14,12 @@ var fs = require('fs-extra')
 var helper = require('./lib/phantomjs')
 var kew = require('kew')
 var npmconf = require('npmconf')
+var os = require('os')
 var path = require('path')
 var request = require('request')
 var url = require('url')
 var util = require('util')
 var which = require('which')
-
-var cdnUrl = process.env.npm_config_phantomjs_cdnurl || process.env.PHANTOMJS_CDNURL ||  'https://bitbucket.org/ariya/phantomjs/downloads'
-var downloadUrl = cdnUrl + '/phantomjs-' + helper.version + '-'
 
 var originalPath = process.env.PATH
 
@@ -102,18 +100,7 @@ whichDeferred.promise
     tmpPath = findSuitableTempDirectory(conf)
 
     // Can't use a global version so start a download.
-    if (process.platform === 'linux' && process.arch === 'x64') {
-      downloadUrl += 'linux-x86_64.tar.bz2'
-    } else if (process.platform === 'linux') {
-      downloadUrl += 'linux-i686.tar.bz2'
-    } else if (process.platform === 'darwin' || process.platform === 'openbsd' || process.platform === 'freebsd') {
-      downloadUrl += 'macosx.zip'
-    } else if (process.platform === 'win32') {
-      downloadUrl += 'windows.zip'
-    } else {
-      console.error('Unexpected platform or architecture:', process.platform, process.arch)
-      exit(1)
-    }
+    var downloadUrl = getDownloadUrl()
 
     var fileName = downloadUrl.split('/').pop()
     var downloadedFile = path.join(tmpPath, fileName)
@@ -122,7 +109,7 @@ whichDeferred.promise
     if (!fs.existsSync(downloadedFile)) {
       console.log('Downloading', downloadUrl)
       console.log('Saving to', downloadedFile)
-      return requestBinary(getRequestOptions(conf), downloadedFile)
+      return requestBinary(getRequestOptions(conf, downloadUrl), downloadedFile)
     } else {
       console.log('Download already available at', downloadedFile)
       return downloadedFile
@@ -201,7 +188,7 @@ function findSuitableTempDirectory(npmConf) {
 }
 
 
-function getRequestOptions(conf) {
+function getRequestOptions(conf, downloadUrl) {
   var strictSSL = conf.get('strict-ssl')
   if (process.version == 'v0.10.34') {
     console.log('Node v0.10.34 detected, turning off strict ssl due to https://github.com/joyent/node/issues/8894')
@@ -342,13 +329,49 @@ function copyIntoPlace(extractedPath, targetPath) {
     var files = fs.readdirSync(extractedPath)
     for (var i = 0; i < files.length; i++) {
       var file = path.join(extractedPath, files[i])
-      if (fs.statSync(file).isDirectory() && file.indexOf(helper.version) != -1) {
+      var fileStat = fs.statSync(file)
+      if (fileStat.isDirectory() && file.indexOf(helper.version) != -1) {
         console.log('Copying extracted folder', file, '->', targetPath)
         return kew.nfcall(fs.move, file, targetPath)
+      } else if (fileStat.isFile() && files[i] == 'phantomjs') {
+        targetPath = path.join(targetPath, 'bin')
+        console.log('Copying extracted binary', file, '->', targetPath)
+
+        return kew.nfcall(fs.mkdirs, targetPath, '0777')
+        .then(function () {
+          return kew.nfcall(fs.move, file, path.join(targetPath, 'phantomjs'))
+        })
       }
     }
 
-    console.log('Could not find extracted file', files)
+    console.log('Could not find extracted file in', extractedPath, ':', files)
     throw new Error('Could not find extracted file')
   })
+}
+
+function getDownloadUrl() {
+  var defaultCdnUrl = 'https://bitbucket.org/ariya/phantomjs/downloads'
+  var eugene1gCdnUrl = 'https://github.com/eugene1g/phantomjs/releases/download/2.0.0-bin/'
+
+  var versionSuffix = ''
+  if (process.platform === 'linux' && process.arch === 'x64' && os.release().indexOf('amzn') != -1) {
+    versionSuffix = 'centos_x86_64.zip'
+    defaultCdnUrl = eugene1gCdnUrl
+  } else if (process.platform === 'darwin') {
+    versionSuffix = 'macosx.zip'
+    defaultCdnUrl = eugene1gCdnUrl
+  } else if (process.platform === 'win32') {
+    versionSuffix = 'windows.zip'
+  }
+
+  if (!versionSuffix) {
+    console.error('There is no prebuilt binary for your platform:', process.platform, process.arch, os.release())
+    console.error('You should install phantomjs from source, put the binary on your PATH, and try again')
+    exit(1)
+  }
+
+  var cdnUrl = process.env.npm_config_phantomjs_cdnurl ||
+      process.env.PHANTOMJS_CDNURL ||
+      defaultCdnUrl
+  return cdnUrl + '/phantomjs-' + helper.version + '-' + versionSuffix
 }
