@@ -3,7 +3,8 @@ node_js:
   - "iojs"
   - "0.12"
   - "0.10"
-  - "0.8"
 
+# https://github.com/travis-ci/travis-ci/issues/3225
 before_install:
+  - export PATH="/usr/local/phantomjs-2.0.0/bin:$PATH"
   - npm install -g npm
