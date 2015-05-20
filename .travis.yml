@@ -5,6 +5,8 @@ node_js:
   - "0.10"
 
 # https://github.com/travis-ci/travis-ci/issues/3225
+env:
+  - PATH="/usr/local/phantomjs-2.0.0/bin:$PATH"
+
 before_install:
-  - export PATH="/usr/local/phantomjs-2.0.0/bin:$PATH"
   - npm install -g npm

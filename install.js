@@ -85,7 +85,7 @@ whichDeferred.promise
       exit(0)
 
     } else {
-      console.log('PhantomJS detected, but wrong version', stdout.trim(), '@', phantomPath + '.')
+      console.log('PhantomJS detected, but wrong version', stdout.trim(), '@', phantomPath + '.', process.env.PATH)
       throw new Error('Wrong version')
     }
   })
@@ -354,10 +354,7 @@ function getDownloadUrl() {
   var eugene1gCdnUrl = 'https://github.com/eugene1g/phantomjs/releases/download/2.0.0-bin/'
 
   var versionSuffix = ''
-  if (process.platform === 'linux' && process.arch === 'x64' && os.release().indexOf('amzn') != -1) {
-    versionSuffix = 'centos_x86_64.zip'
-    defaultCdnUrl = eugene1gCdnUrl
-  } else if (process.platform === 'darwin') {
+  if (process.platform === 'darwin') {
     versionSuffix = 'macosx.zip'
     defaultCdnUrl = eugene1gCdnUrl
   } else if (process.platform === 'win32') {
