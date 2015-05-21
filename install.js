@@ -138,11 +138,20 @@ whichDeferred.promise
     var location = process.platform === 'win32' ?
         path.join(pkgPath, 'phantomjs.exe') :
         path.join(pkgPath, 'bin' ,'phantomjs')
+
+    try {
+      // Ensure executable is executable by all users
+      fs.chmodSync(location, '755')
+    } catch (err) {
+      if (err.code == 'ENOENT') {
+        console.error('chmod failed: phantomjs was not successfully copied to', location)
+        exit(1)
+      }
+      throw err
+    }
+
     var relativeLocation = path.relative(libPath, location)
     writeLocationFile(relativeLocation)
-
-    // Ensure executable is executable by all users
-    fs.chmodSync(location, '755')
 
     console.log('Done. Phantomjs binary available at', location)
     exit(0)
