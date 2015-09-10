@@ -101,17 +101,18 @@ whichDeferred.promise
   .then(function (conf) {
     tmpPath = findSuitableTempDirectory(conf)
 
+    var platform = getTargetPlatform();
     // Can't use a global version so start a download.
-    if (process.platform === 'linux' && process.arch === 'x64') {
+    if (platform === 'linux' && process.arch === 'x64') {
       downloadUrl += 'linux-x86_64.tar.bz2'
-    } else if (process.platform === 'linux') {
+    } else if (platform === 'linux') {
       downloadUrl += 'linux-i686.tar.bz2'
-    } else if (process.platform === 'darwin' || process.platform === 'openbsd' || process.platform === 'freebsd') {
+    } else if (platform === 'darwin' || platform === 'openbsd' || platform === 'freebsd') {
       downloadUrl += 'macosx.zip'
-    } else if (process.platform === 'win32') {
+    } else if (platform === 'win32') {
       downloadUrl += 'windows.zip'
     } else {
-      console.error('Unexpected platform or architecture:', process.platform, process.arch)
+      console.error('Unexpected platform or architecture:', platform, process.arch)
       exit(1)
     }
 
@@ -135,7 +136,7 @@ whichDeferred.promise
     return copyIntoPlace(extractedPath, pkgPath)
   })
   .then(function () {
-    var location = process.platform === 'win32' ?
+    var location = getTargetPlatform() === 'win32' ?
         path.join(pkgPath, 'phantomjs.exe') :
         path.join(pkgPath, 'bin' ,'phantomjs')
 
@@ -304,6 +305,14 @@ function requestBinary(requestOptions, filePath) {
   return deferred.promise
 }
 
+function getTargetPlatform(){
+  if (process.env.PHANTOMJS_PLATFORM){
+    return process.env.PHANTOMJS_PLATFORM;
+  }
+  else{
+    return process.platform;
+  }
+}
 
 function extractDownload(filePath) {
   var deferred = kew.defer()
