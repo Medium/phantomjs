@@ -104,14 +104,16 @@ whichDeferred.promise
     // Can't use a global version so start a download.
     if (process.platform === 'linux' && process.arch === 'x64') {
       downloadUrl += 'linux-x86_64.tar.bz2'
-    } else if (process.platform === 'linux') {
+    } else if (process.platform === 'linux' && process.arch == 'ia32') {
       downloadUrl += 'linux-i686.tar.bz2'
     } else if (process.platform === 'darwin' || process.platform === 'openbsd' || process.platform === 'freebsd') {
       downloadUrl += 'macosx.zip'
     } else if (process.platform === 'win32') {
       downloadUrl += 'windows.zip'
     } else {
-      console.error('Unexpected platform or architecture:', process.platform, process.arch)
+      console.error('Unexpected platform or architecture: ' + process.platform + '/' + process.arch + '\n' +
+          'It seems there is no binary available for your platform/architecture\n' +
+          'Try to install PhantomJS globally')
       exit(1)
     }
 
