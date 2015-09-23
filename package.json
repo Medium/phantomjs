@@ -31,7 +31,7 @@
   },
   "scripts": {
     "install": "node install.js",
-    "test": "nodeunit --reporter=minimal test/tests.js"
+    "test": "nodeunit --reporter=minimal test/tests.js && eslint install.js"
   },
   "dependencies": {
     "adm-zip": "0.4.4",
@@ -44,6 +44,7 @@
     "which": "~1.0.5"
   },
   "devDependencies": {
+    "eslint": "1.5.1",
     "nodeunit": "0.9.0"
   }
 }
