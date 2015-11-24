@@ -55,15 +55,10 @@ var npmConfPromise = kew.nfcall(npmconf.load)
 // https://github.com/Obvious/phantomjs/issues/85
 // https://github.com/Medium/phantomjs/pull/184
 kew.resolve(true)
-  .then(function () {
-    return tryPhantomjsOnPath()
-  })
-  .then(function () {
-    return downloadPhantomjs()
-  })
-  .then(function (downloadedFile) {
-    return extractDownload(downloadedFile)
-  })
+  .then(tryPhantomjsInLib)
+  .then(tryPhantomjsOnPath)
+  .then(downloadPhantomjs)
+  .then(extractDownload)
   .then(function (extractedPath) {
     return copyIntoPlace(extractedPath, pkgPath)
   })
@@ -305,6 +300,23 @@ function copyIntoPlace(extractedPath, targetPath) {
 }
 
 /**
+ * Check to see if the binary in lib is OK to use. If successful, exit the process.
+ */
+function tryPhantomjsInLib() {
+  return kew.fcall(function () {
+    var libModule = require('./lib/location.js')
+    if (libModule.location &&
+        getTargetPlatform() == libModule.platform &&
+        getTargetArch() == libModule.arch) {
+      console.log('PhantomJS is previously installed at ' + libModule.location)
+      exit(0)
+    }
+  }).fail(function () {
+    // silently swallow any errors
+  })
+}
+
+/**
  * Check to see if the binary on PATH is OK to use. If successful, exit the process.
  */
 function tryPhantomjsOnPath() {
@@ -332,7 +344,7 @@ function tryPhantomjsOnPath() {
       return checkPhantomjsVersion(phantomPath).then(function (matches) {
         if (matches) {
           writeLocationFile(phantomPath)
-          console.log('PhantomJS is already installed at', phantomPath + '.')
+          console.log('PhantomJS is already installed on PATH at', phantomPath)
           exit(0)
         }
       })
