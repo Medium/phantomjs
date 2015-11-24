@@ -68,7 +68,7 @@ kew.resolve(true)
     return copyIntoPlace(extractedPath, pkgPath)
   })
   .then(function () {
-    var location = process.platform === 'win32' ?
+    var location = getTargetPlatform() === 'win32' ?
         path.join(pkgPath, 'phantomjs.exe') :
         path.join(pkgPath, 'bin' ,'phantomjs')
 
@@ -97,11 +97,22 @@ kew.resolve(true)
 
 function writeLocationFile(location) {
   console.log('Writing location.js file')
-  if (process.platform === 'win32') {
+  if (getTargetPlatform() === 'win32') {
     location = location.replace(/\\/g, '\\\\')
   }
-  fs.writeFileSync(path.join(libPath, 'location.js'),
-      'module.exports.location = "' + location + '"')
+
+  var platform = getTargetPlatform()
+  var arch = getTargetArch()
+
+  var contents = 'module.exports.location = "' + location + '"\n'
+
+  if (/^[a-zA-Z0-9]*$/.test(platform) && /^[a-zA-Z0-9]*$/.test(arch)) {
+    contents +=
+        'module.exports.platform = "' + getTargetPlatform() + '"\n' +
+        'module.exports.arch = "' + getTargetArch() + '"\n'
+  }
+
+  fs.writeFileSync(path.join(libPath, 'location.js'), contents)
 }
 
 function exit(code) {
@@ -297,6 +308,12 @@ function copyIntoPlace(extractedPath, targetPath) {
  * Check to see if the binary on PATH is OK to use. If successful, exit the process.
  */
 function tryPhantomjsOnPath() {
+  if (getTargetPlatform() != process.platform || getTargetArch() != process.arch) {
+    console.log('Building for target platform ' + getTargetPlatform() + '/' + getTargetArch() +
+                '. Skipping PATH search')
+    return kew.resolve(false)
+  }
+
   return kew.nfcall(which, 'phantomjs')
   .then(function (result) {
     phantomPath = result
@@ -338,13 +355,15 @@ function getDownloadUrl() {
       'https://bitbucket.org/ariya/phantomjs/downloads'
   var downloadUrl = cdnUrl + '/phantomjs-' + helper.version + '-'
 
-  if (process.platform === 'linux' && process.arch === 'x64') {
+  var platform = getTargetPlatform()
+  var arch = getTargetArch()
+  if (platform === 'linux' && arch === 'x64') {
     downloadUrl += 'linux-x86_64.tar.bz2'
-  } else if (process.platform === 'linux' && process.arch == 'ia32') {
+  } else if (platform === 'linux' && arch == 'ia32') {
     downloadUrl += 'linux-i686.tar.bz2'
-  } else if (process.platform === 'darwin' || process.platform === 'openbsd' || process.platform === 'freebsd') {
+  } else if (platform === 'darwin' || platform === 'openbsd' || platform === 'freebsd') {
     downloadUrl += 'macosx.zip'
-  } else if (process.platform === 'win32') {
+  } else if (platform === 'win32') {
     downloadUrl += 'windows.zip'
   } else {
     return null
@@ -360,7 +379,7 @@ function downloadPhantomjs() {
   var downloadUrl = getDownloadUrl()
   if (!downloadUrl) {
     console.error(
-        'Unexpected platform or architecture: ' + process.platform + '/' + process.arch + '\n' +
+        'Unexpected platform or architecture: ' + getTargetPlatform() + '/' + getTargetArch() + '\n' +
         'It seems there is no binary available for your platform/architecture\n' +
         'Try to install PhantomJS globally')
     exit(1)
@@ -403,4 +422,18 @@ function checkPhantomjsVersion(phantomPath) {
     console.error('Error verifying phantomjs, continuing', err)
     return false
   })
+}
+
+/**
+ * @return {string}
+ */
+function getTargetPlatform() {
+  return process.env.PHANTOMJS_PLATFORM || process.platform
+}
+
+/**
+ * @return {string}
+ */
+function getTargetArch() {
+  return process.env.PHANTOMJS_ARCH || process.arch
 }

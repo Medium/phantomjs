@@ -1,7 +1,7 @@
 phantomjs
 =========
 
-An NPM wrapper for [PhantomJS](http://phantomjs.org/), headless webkit with JS API.
+An NPM installer for [PhantomJS](http://phantomjs.org/), headless webkit with JS API.
 
 [![Build Status](https://travis-ci.org/Medium/phantomjs.svg?branch=master)](https://travis-ci.org/Medium/phantomjs)
 
@@ -102,6 +102,27 @@ If you plan to install phantomjs many times on a single machine, you can
 install the `phantomjs` binary on PATH. The installer will automatically detect
 and use that for non-global installs.
 
+Cross-Platform Repositories
+---------------------------
+
+PhantomJS needs to be compiled separately for each platform. This installer
+finds a prebuilt binary for your operating system, and downloads it.
+
+If you check your dependencies into git, and work on a cross-platform
+team, then you need to tell NPM to rebuild any platform-specific dependencies. Run
+
+```shell
+npm rebuild
+```
+
+as part of your build process. This problem is not specific to PhantomJS, and this
+solution will work for any NodeJS package with native or platform-specific code.
+
+If you know in advance that you want to install PhantomJS for a specific architecture,
+you can set the environment variables: `PHANTOMJS_PLATFORM`
+(to set target platform) and `PHANTOMJS_ARCH` (to set target
+arch), where `platform` and `arch` are valid values for
+[process.platform and process.arch](https://nodejs.org/api/process.html).
 
 A Note on PhantomJS
 -------------------
@@ -192,9 +213,9 @@ Contributing
 ------------
 
 Questions, comments, bug reports, and pull requests are all welcome.  Submit them at
-[the project on GitHub](https://github.com/Obvious/phantomjs/).  If you haven't contributed to an
-[Obvious](http://github.com/Obvious/) project before please head over to the
-[Open Source Project](https://github.com/Obvious/open-source#note-to-external-contributors) and fill
+[the project on GitHub](https://github.com/Medium/phantomjs/).  If you haven't contributed to an
+[Medium](http://github.com/Medium/) project before please head over to the
+[Open Source Project](https://github.com/Medium/open-source#note-to-external-contributors) and fill
 out an OCLA (it should be pretty painless).
 
 Bug reports that include steps-to-reproduce (including code) are the
@@ -205,12 +226,12 @@ Author
 
 [Dan Pupius](https://github.com/dpup)
 ([personal website](http://pupius.co.uk)), supported by
-[The Obvious Corporation](http://obvious.com/).
+[A Medium Corporation](http://medium.com/).
 
 License
 -------
 
-Copyright 2012 [The Obvious Corporation](http://obvious.com/).
+Copyright 2012 [A Medium Corporation](http://medium.com/).
 
 Licensed under the Apache License, Version 2.0.
 See the top-level file `LICENSE.txt` and
