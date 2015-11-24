@@ -13,6 +13,7 @@ var cp = require('child_process')
 var fs = require('fs-extra')
 var helper = require('./lib/phantomjs')
 var kew = require('kew')
+var md5 = require('md5')
 var npmconf = require('npmconf')
 var path = require('path')
 var request = require('request')
@@ -39,7 +40,6 @@ process.env.PATH = helper.cleanPath(originalPath)
 var libPath = path.join(__dirname, 'lib')
 var pkgPath = path.join(libPath, 'phantom')
 var phantomPath = null
-var tmpPath = null
 
 var npmConfPromise = kew.nfcall(npmconf.load)
 
@@ -347,37 +347,53 @@ function tryPhantomjsOnPath() {
 }
 
 /**
- * @return {?string} Get the download URL for phantomjs. May return null if no download url exists.
+ * @return {?string} Get the download URL for phantomjs.
+ *     May return null if no download url exists.
  */
 function getDownloadUrl() {
+  var spec = getDownloadSpec()
+  return spec && spec.url
+}
+
+/**
+ * @return {?{url: string, checksum: string}} Get the download URL and expected
+ *     md5 checksum for phantomjs.  May return null if no download url exists.
+ */
+function getDownloadSpec() {
   var cdnUrl = process.env.npm_config_phantomjs_cdnurl ||
       process.env.PHANTOMJS_CDNURL ||
       'https://bitbucket.org/ariya/phantomjs/downloads'
   var downloadUrl = cdnUrl + '/phantomjs-' + helper.version + '-'
+  var checksum = ''
 
   var platform = getTargetPlatform()
   var arch = getTargetArch()
   if (platform === 'linux' && arch === 'x64') {
     downloadUrl += 'linux-x86_64.tar.bz2'
+    checksum = '4ea7aa79e45fbc487a63ef4788a18ef7'
   } else if (platform === 'linux' && arch == 'ia32') {
     downloadUrl += 'linux-i686.tar.bz2'
+    checksum = '814a438ca515c6f7b1b2259d0d5bc804'
   } else if (platform === 'darwin' || platform === 'openbsd' || platform === 'freebsd') {
     downloadUrl += 'macosx.zip'
+    checksum = 'fb850d56c033dd6e1142953904f62614'
   } else if (platform === 'win32') {
     downloadUrl += 'windows.zip'
+    checksum = 'c5eed3aeb356ee597a457ab5b1bea870'
   } else {
     return null
   }
-  return downloadUrl
+  return {url: downloadUrl, checksum: checksum}
 }
 
 /**
  * Download phantomjs, reusing the existing copy on disk if available.
  * Exits immediately if there is no binary to download.
+ * @return {Promise.<string>} The path to the downloaded file.
  */
 function downloadPhantomjs() {
-  var downloadUrl = getDownloadUrl()
-  if (!downloadUrl) {
+  var downloadSpec = getDownloadSpec()
+  if (!downloadSpec) {
     console.error(
         'Unexpected platform or architecture: ' + getTargetPlatform() + '/' + getTargetArch() + '\n' +
         'It seems there is no binary available for your platform/architecture\n' +
@@ -385,22 +401,53 @@ function downloadPhantomjs() {
     exit(1)
   }
 
-  return npmConfPromise.then(function (conf) {
-    tmpPath = findSuitableTempDirectory(conf)
+  var downloadUrl = downloadSpec.url
+  var downloadedFile
+  var conf
+
+  return npmConfPromise.then(function (_conf) {
+    conf = _conf
 
     // Can't use a global version so start a download.
+    var tmpPath = findSuitableTempDirectory(conf)
     var fileName = downloadUrl.split('/').pop()
-    var downloadedFile = path.join(tmpPath, fileName)
+    downloadedFile = path.join(tmpPath, fileName)
 
-    // Start the install.
-    if (!fs.existsSync(downloadedFile)) {
-      console.log('Downloading', downloadUrl)
-      console.log('Saving to', downloadedFile)
-      return requestBinary(getRequestOptions(conf), downloadedFile)
-    } else {
+    if (fs.existsSync(downloadedFile)) {
       console.log('Download already available at', downloadedFile)
+      return verifyChecksum(downloadedFile, downloadSpec.checksum)
+    }
+    return false
+  }).then(function (verified) {
+    if (verified) {
       return downloadedFile
     }
+
+    // Start the install.
+    console.log('Downloading', downloadUrl)
+    console.log('Saving to', downloadedFile)
+    return requestBinary(getRequestOptions(conf), downloadedFile)
+  })
+}
+
+/**
+ * Check to make sure that the file matches the checksum.
+ * @param {string} fileName
+ * @param {string} checksum
+ * @return {Promise.<boolean>}
+ */
+function verifyChecksum(fileName, checksum) {
+  return kew.nfcall(fs.readFile, fileName).then(function (buffer) {
+    var result = checksum == md5(buffer)
+    if (result) {
+      console.log('Verified checksum of previously downloaded file')
+    } else {
+      console.log('Checksum did not match')
+    }
+    return result
+  }).fail(function (err) {
+    console.error('Failed to verify checksum: ', err)
+    return false
   })
 }
 
