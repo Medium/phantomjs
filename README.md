@@ -209,6 +209,25 @@ conflict. This is a non-portable change, and we do not try to support this. The
 recommends that you run `apt-get install nodejs-legacy` to symlink `node` to `nodejs` 
 on those platforms, or many NodeJS programs won't work properly.
 
+##### The latest version of this package installs PhantomJS 1.9.8. When is PhantomJS 2.0 coming?
+
+In January 2015, the PhantomJS project released PhantomJS 2.0 with statically
+compiled Windows binaries.
+
+They were not able to create statically-compiled binaries for Linux or OSX 9+.
+
+This put us in a difficult position. The whole reason this NPM installer exists
+is to provide a portable, cross-platform installation process for
+PhantomJS. Without static binaries, we can't support PhantomJS 2.0.
+
+If you work on a project that does not need cross-platform installation
+(for example, if your users can compile and install phantomjs themselves on PATH),
+then there is no good reason to depend on this package. You should call phantomjs
+directly with `child_process.spawn`.
+
+The core PhantomJS team is hard at work trying to producing static binaries,
+but there's currently no timeline.
+
 Contributing
 ------------
 
@@ -225,7 +244,8 @@ Author
 ------
 
 [Dan Pupius](https://github.com/dpup)
-([personal website](http://pupius.co.uk)), supported by
+([personal website](http://pupius.co.uk)) and
+[Nick Santos](https://github.com/nicks), supported by
 [A Medium Corporation](http://medium.com/).
 
 License
