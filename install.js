@@ -123,7 +123,7 @@ whichDeferred.promise
   })
   .then(function () {
     var location = process.platform === 'win32' ?
-        path.join(pkgPath, 'phantomjs.exe') :
+        path.join(pkgPath, 'bin', 'phantomjs.exe') :
         path.join(pkgPath, 'bin' ,'phantomjs')
     var relativeLocation = path.relative(libPath, location)
     writeLocationFile(relativeLocation)
