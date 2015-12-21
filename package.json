@@ -42,7 +42,7 @@
     "adm-zip": "0.4.4",
     "fs-extra": "~0.23.1",
     "kew": "0.4.0",
-    "md5": "~2.0.0",  
+    "md5": "~2.0.0",
     "npmconf": "2.1.1",
     "progress": "1.1.8",
     "request": "2.42.0",
@@ -50,7 +50,7 @@
     "which": "~1.0.5"
   },
   "devDependencies": {
-    "eslint": "1.5.1",
-    "nodeunit": "0.9.0"
+    "eslint": "1.10.3",
+    "nodeunit": "0.9.1"
   }
 }
