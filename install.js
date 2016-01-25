@@ -14,7 +14,6 @@ var fs = require('fs-extra')
 var helper = require('./lib/phantomjs')
 var kew = require('kew')
 var md5 = require('md5')
-var npmconf = require('npmconf')
 var path = require('path')
 var request = require('request')
 var url = require('url')
@@ -40,8 +39,6 @@ process.env.PATH = helper.cleanPath(originalPath)
 var libPath = path.join(__dirname, 'lib')
 var pkgPath = path.join(libPath, 'phantom')
 var phantomPath = null
-
-var npmConfPromise = kew.nfcall(npmconf.load)
 
 // If the user manually installed PhantomJS, we want
 // to use the existing version.
@@ -117,10 +114,10 @@ function exit(code) {
 }
 
 
-function findSuitableTempDirectory(npmConf) {
+function findSuitableTempDirectory() {
   var now = Date.now()
   var candidateTmpDirs = [
-    process.env.TMPDIR || process.env.TEMP || npmConf.get('tmp'),
+    process.env.TMPDIR || process.env.TEMP || process.env.npm_config_tmp,
     '/tmp',
     path.join(process.cwd(), 'tmp')
   ]
@@ -149,13 +146,12 @@ function findSuitableTempDirectory(npmConf) {
 }
 
 
-function getRequestOptions(conf) {
-  var strictSSL = conf.get('strict-ssl')
+function getRequestOptions() {
+  var strictSSL = !!process.env.npm_config_strict_ssl
   if (process.version == 'v0.10.34') {
     console.log('Node v0.10.34 detected, turning off strict ssl due to https://github.com/joyent/node/issues/8894')
     strictSSL = false
   }
-
 
   var options = {
     uri: getDownloadUrl(),
@@ -165,7 +161,9 @@ function getRequestOptions(conf) {
     strictSSL: strictSSL
   }
 
-  var proxyUrl = conf.get('https-proxy') || conf.get('http-proxy') || conf.get('proxy')
+  var proxyUrl = process.env.npm_config_https_proxy ||
+      process.env.npm_config_http_proxy ||
+      process.env.npm_config_proxy
   if (proxyUrl) {
 
     // Print using proxy
@@ -178,21 +176,46 @@ function getRequestOptions(conf) {
 
     // Enable proxy
     options.proxy = proxyUrl
-
-    // If going through proxy, use the user-agent string from the npm config
-    options.headers['User-Agent'] = conf.get('user-agent')
   }
 
+  // Use the user-agent string from the npm config
+  options.headers['User-Agent'] = process.env.npm_config_user_agent
+
   // Use certificate authority settings from npm
-  var ca = conf.get('ca')
+  var ca = process.env.npm_config_ca
+  if (!ca && process.env.npm_config_cafile) {
+    try {
+      ca = fs.readFileSync(process.env.npm_config_cafile)
+    } catch (e) {
+      console.error('Could not read cafile', process.env.npm_config_cafile, e)
+    }
+  }
+
   if (ca) {
     console.log('Using npmconf ca')
-    options.ca = ca
+    options.agentOptions = {
+      ca: ca
+    }
   }
 
   return options
 }
 
+function handleRequestError(error) {
+  if (error && error.stack && error.stack.indexOf('SELF_SIGNED_CERT_IN_CHAIN') != -1) {
+      console.error('Error making request, SELF_SIGNED_CERT_IN_CHAIN. ' +
+          'Please read https://github.com/Medium/phantomjs#i-am-behind-a-corporate-proxy-that-uses-self-signed-ssl-certificates-to-intercept-encrypted-traffic')
+      exit(1)
+  } else if (error) {
+    console.error('Error making request.\n' + error.stack + '\n\n' +
+        'Please report this full log at https://github.com/Medium/phantomjs')
+    exit(1)
+  } else {
+    console.error('Something unexpected happened, please report this full ' +
+        'log at https://github.com/Medium/phantomjs')
+    exit(1)
+  }
+}
 
 function requestBinary(requestOptions, filePath) {
   var deferred = kew.defer()
@@ -218,25 +241,21 @@ function requestBinary(requestOptions, filePath) {
           'If you continue to have issues, please report this full log at ' +
           'https://github.com/Medium/phantomjs')
       exit(1)
-    } else if (error && error.stack && error.stack.indexOf('SELF_SIGNED_CERT_IN_CHAIN') != -1) {
-      console.error('Error making request, SELF_SIGNED_CERT_IN_CHAIN. Please read https://github.com/Medium/phantomjs#i-am-behind-a-corporate-proxy-that-uses-self-signed-ssl-certificates-to-intercept-encrypted-traffic')
-      exit(1)
-    } else if (error) {
-      console.error('Error making request.\n' + error.stack + '\n\n' +
-          'Please report this full log at https://github.com/Medium/phantomjs')
-      exit(1)
     } else {
-      console.error('Something unexpected happened, please report this full ' +
-          'log at https://github.com/Medium/phantomjs')
-      exit(1)
+      handleRequestError(error)
     }
   })).on('progress', function (state) {
-    if (!bar) {
-      bar = new progress('  [:bar] :percent :etas', {total: state.total, width: 40})
+    try {
+      if (!bar) {
+        bar = new progress('  [:bar] :percent', {total: state.size.total, width: 40})
+      }
+      bar.curr = state.size.transferred
+      bar.tick()
+    } catch (e) {
+      // It doesn't really matter if the progress bar doesn't update.
     }
-    bar.curr = state.received
-    bar.tick(0)
   })
+  .on('error', handleRequestError)
 
   return deferred.promise
 }
@@ -307,7 +326,8 @@ function tryPhantomjsInLib() {
     var libModule = require('./lib/location.js')
     if (libModule.location &&
         getTargetPlatform() == libModule.platform &&
-        getTargetArch() == libModule.arch) {
+        getTargetArch() == libModule.arch &&
+        fs.statSync(path.join('./lib', libModule.location))) {
       console.log('PhantomJS is previously installed at ' + libModule.location)
       exit(0)
     }
@@ -415,13 +435,10 @@ function downloadPhantomjs() {
 
   var downloadUrl = downloadSpec.url
   var downloadedFile
-  var conf
 
-  return npmConfPromise.then(function (_conf) {
-    conf = _conf
-
+  return kew.fcall(function () {
     // Can't use a global version so start a download.
-    var tmpPath = findSuitableTempDirectory(conf)
+    var tmpPath = findSuitableTempDirectory()
     var fileName = downloadUrl.split('/').pop()
     downloadedFile = path.join(tmpPath, fileName)
 
@@ -438,7 +455,7 @@ function downloadPhantomjs() {
     // Start the install.
     console.log('Downloading', downloadUrl)
     console.log('Saving to', downloadedFile)
-    return requestBinary(getRequestOptions(conf), downloadedFile)
+    return requestBinary(getRequestOptions(), downloadedFile)
   })
 }
 
