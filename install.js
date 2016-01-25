@@ -382,16 +382,16 @@ function getDownloadSpec() {
   var arch = getTargetArch()
   if (platform === 'linux' && arch === 'x64') {
     downloadUrl += 'linux-x86_64.tar.bz2'
-    checksum = '4ea7aa79e45fbc487a63ef4788a18ef7'
+    checksum = '1c947d57fce2f21ce0b43fe2ed7cd361'
   } else if (platform === 'linux' && arch == 'ia32') {
     downloadUrl += 'linux-i686.tar.bz2'
-    checksum = '814a438ca515c6f7b1b2259d0d5bc804'
+    checksum = '0396e8249e082f72c1e39d33fc9d8de6'
   } else if (platform === 'darwin' || platform === 'openbsd' || platform === 'freebsd') {
     downloadUrl += 'macosx.zip'
-    checksum = 'fb850d56c033dd6e1142953904f62614'
+    checksum = 'b0c038bd139b9ecaad8fd321070c1651'
   } else if (platform === 'win32') {
     downloadUrl += 'windows.zip'
-    checksum = 'c5eed3aeb356ee597a457ab5b1bea870'
+    checksum = '4104470d43ddf2a195e8869deef0aa69'
   } else {
     return null
   }
