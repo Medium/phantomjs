@@ -1,5 +1,5 @@
-phantomjs
-=========
+phantomjs-prebuilt
+==================
 
 An NPM installer for [PhantomJS](http://phantomjs.org/), headless webkit with JS API.
 
@@ -9,7 +9,7 @@ Building and Installing
 -----------------------
 
 ```shell
-npm install phantomjs
+npm install phantomjs-prebuilt
 ```
 
 Or grab the source and
@@ -21,11 +21,6 @@ node ./install.js
 What this installer is really doing is just grabbing a particular "blessed" (by
 this module) version of Phantom. As new versions of Phantom are released
 and vetted, this module will be updated accordingly.
-
-The package has been set up to fetch and run Phantom for MacOS (darwin),
-Linux based platforms (as identified by nodejs), and -- as of version 0.2.0 --
-Windows (thanks to [Domenic Denicola](https://github.com/domenic)).  If you
-spot any platform weirdnesses, let us know or send a patch.
 
 Running
 -------
@@ -48,7 +43,7 @@ Below is an example of using this package via node.
 ```javascript
 var path = require('path')
 var childProcess = require('child_process')
-var phantomjs = require('phantomjs')
+var phantomjs = require('phantomjs-prebuilt')
 var binPath = phantomjs.path
 
 var childArgs = [
@@ -68,6 +63,10 @@ Versioning
 The major and minor number tracks the version of PhantomJS that will be
 installed. The patch number is incremented when there is either an installer
 update or a patch build of the phantom binary.
+
+Pre-2.0, this package was published to NPM as [https://www.npmjs.com/package/phantomjs](phantomjs).
+We changed the name to [https://www.npmjs.com/package/phantomjs-prebuilt](phantomjs-prebuilt) at
+the request of PhantomJS team.
 
 Deciding Where To Get PhantomJS
 -------------------------------
