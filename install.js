@@ -185,7 +185,8 @@ function getRequestOptions() {
   var ca = process.env.npm_config_ca
   if (!ca && process.env.npm_config_cafile) {
     try {
-      ca = fs.readFileSync(process.env.npm_config_cafile)
+      ca = fs.readFileSync(process.env.npm_config_cafile, {encoding: 'utf8'})
+        .split(/\n(?=-----BEGIN CERTIFICATE-----)/g)
     } catch (e) {
       console.error('Could not read cafile', process.env.npm_config_cafile, e)
     }
