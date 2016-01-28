@@ -3,6 +3,14 @@ phantomjs
 
 An NPM installer for [PhantomJS](http://phantomjs.org/), headless webkit with JS API.
 
+### DEPRECATED
+
+**Pre-2.0, this package was published to NPM as [phantomjs](https://www.npmjs.com/package/phantomjs).
+We changed the name to [phantomjs-prebuilt](https://www.npmjs.com/package/phantomjs-prebuilt) at
+the request of PhantomJS team.**
+
+**Please update your package references from `phantomjs` to `phantomjs-prebuilt`**
+
 [![Build Status](https://travis-ci.org/Medium/phantomjs.svg?branch=master)](https://travis-ci.org/Medium/phantomjs)
 
 Building and Installing
