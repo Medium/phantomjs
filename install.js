@@ -187,6 +187,14 @@ function getRequestOptions() {
     try {
       ca = fs.readFileSync(process.env.npm_config_cafile, {encoding: 'utf8'})
         .split(/\n(?=-----BEGIN CERTIFICATE-----)/g)
+
+      // Comments at the beginning of the file result in the first
+      // item not containing a certificate - in this case the
+      // download will fail
+      if (ca.length > 0 && !/-----BEGIN CERTIFICATE-----/.test(ca[0])) {
+        ca.shift()
+      }
+
     } catch (e) {
       console.error('Could not read cafile', process.env.npm_config_cafile, e)
     }
