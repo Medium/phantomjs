@@ -64,8 +64,8 @@ The major and minor number tracks the version of PhantomJS that will be
 installed. The patch number is incremented when there is either an installer
 update or a patch build of the phantom binary.
 
-Pre-2.0, this package was published to NPM as [https://www.npmjs.com/package/phantomjs](phantomjs).
-We changed the name to [https://www.npmjs.com/package/phantomjs-prebuilt](phantomjs-prebuilt) at
+Pre-2.0, this package was published to NPM as [phantomjs](https://www.npmjs.com/package/phantomjs).
+We changed the name to [phantomjs-prebuilt](https://www.npmjs.com/package/phantomjs-prebuilt) at
 the request of PhantomJS team.
 
 Deciding Where To Get PhantomJS
