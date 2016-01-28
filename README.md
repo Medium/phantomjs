@@ -1,7 +1,15 @@
-phantomjs-prebuilt
+phantomjs
 ==================
 
 An NPM installer for [PhantomJS](http://phantomjs.org/), headless webkit with JS API.
+
+### DEPRECATED
+
+**Pre-2.0, this package was published to NPM as [phantomjs](https://www.npmjs.com/package/phantomjs).
+We changed the name to [phantomjs-prebuilt](https://www.npmjs.com/package/phantomjs-prebuilt) at
+the request of PhantomJS team.**
+
+**Please update your package references from `phantomjs` to `phantomjs-prebuilt`**
 
 [![Build Status](https://travis-ci.org/Medium/phantomjs.svg?branch=master)](https://travis-ci.org/Medium/phantomjs)
 
@@ -9,7 +17,7 @@ Building and Installing
 -----------------------
 
 ```shell
-npm install phantomjs-prebuilt
+npm install phantomjs
 ```
 
 Or grab the source and
@@ -43,7 +51,7 @@ Below is an example of using this package via node.
 ```javascript
 var path = require('path')
 var childProcess = require('child_process')
-var phantomjs = require('phantomjs-prebuilt')
+var phantomjs = require('phantomjs')
 var binPath = phantomjs.path
 
 var childArgs = [
@@ -83,7 +91,7 @@ Alternatives include `https://bitbucket.org/ariya/phantomjs/downloads` (the offi
 and `http://cnpmjs.org/downloads`.
 
 ```Shell
-npm install phantomjs-prebuilt --phantomjs_cdnurl=https://bitbucket.org/ariya/phantomjs/downloads
+npm install phantomjs --phantomjs_cdnurl=https://bitbucket.org/ariya/phantomjs/downloads
 ```
 
 Or add property into your `.npmrc` file (https://www.npmjs.org/doc/files/npmrc.html)

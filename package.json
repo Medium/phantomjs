@@ -1,6 +1,6 @@
 {
-  "name": "phantomjs-prebuilt",
-  "version": "2.1.7",
+  "name": "phantomjs",
+  "version": "2.1.7+deprecated",
   "keywords": [
     "phantomjs",
     "headless",
