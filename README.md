@@ -81,7 +81,7 @@ a download mirror. To set a mirror, set npm config property `phantomjs_cdnurl`.
 Default is ``.
 
 ```shell
-npm install phantomjs --phantomjs_cdnurl=http://cnpmjs.org/downloads
+npm install phantomjs-prebuilt --phantomjs_cdnurl=http://cnpmjs.org/downloads
 ```
 
 Or add property into your `.npmrc` file (https://www.npmjs.org/doc/files/npmrc.html)
