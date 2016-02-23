@@ -11,9 +11,9 @@ var progress = require('progress')
 var AdmZip = require('adm-zip')
 var cp = require('child_process')
 var fs = require('fs-extra')
+var hasha = require('hasha')
 var helper = require('./lib/phantomjs')
 var kew = require('kew')
-var md5 = require('md5')
 var path = require('path')
 var request = require('request')
 var url = require('url')
@@ -475,8 +475,8 @@ function downloadPhantomjs() {
  * @return {Promise.<boolean>}
  */
 function verifyChecksum(fileName, checksum) {
-  return kew.nfcall(fs.readFile, fileName).then(function (buffer) {
-    var result = checksum == md5(buffer)
+  return kew.resolve(hasha.fromFile(fileName, {algorithm: 'md5'})).then(function (hash) {
+    var result = checksum == hash
     if (result) {
       console.log('Verified checksum of previously downloaded file')
     } else {
