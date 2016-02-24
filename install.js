@@ -398,7 +398,7 @@ function getDownloadUrl() {
 
 /**
  * @return {?{url: string, checksum: string}} Get the download URL and expected
- *     md5 checksum for phantomjs.  May return null if no download url exists.
+ *     SHA-256 checksum for phantomjs.  May return null if no download url exists.
  */
 function getDownloadSpec() {
   var cdnUrl = process.env.npm_config_phantomjs_cdnurl ||
@@ -411,16 +411,16 @@ function getDownloadSpec() {
   var arch = getTargetArch()
   if (platform === 'linux' && arch === 'x64') {
     downloadUrl += 'linux-x86_64.tar.bz2'
-    checksum = '1c947d57fce2f21ce0b43fe2ed7cd361'
+    checksum = '86dd9a4bf4aee45f1a84c9f61cf1947c1d6dce9b9e8d2a907105da7852460d2f'
   } else if (platform === 'linux' && arch == 'ia32') {
     downloadUrl += 'linux-i686.tar.bz2'
-    checksum = '0396e8249e082f72c1e39d33fc9d8de6'
+    checksum = '80e03cfeb22cc4dfe4e73b68ab81c9fdd7c78968cfd5358e6af33960464f15e3'
   } else if (platform === 'darwin' || platform === 'openbsd' || platform === 'freebsd') {
     downloadUrl += 'macosx.zip'
-    checksum = 'b0c038bd139b9ecaad8fd321070c1651'
+    checksum = '538cf488219ab27e309eafc629e2bcee9976990fe90b1ec334f541779150f8c1'
   } else if (platform === 'win32') {
     downloadUrl += 'windows.zip'
-    checksum = '4104470d43ddf2a195e8869deef0aa69'
+    checksum = 'd9fb05623d6b26d3654d008eab3adafd1f6350433dfd16138c46161f42c7dcc8'
   } else {
     return null
   }
@@ -475,7 +475,7 @@ function downloadPhantomjs() {
  * @return {Promise.<boolean>}
  */
 function verifyChecksum(fileName, checksum) {
-  return kew.resolve(hasha.fromFile(fileName, {algorithm: 'md5'})).then(function (hash) {
+  return kew.resolve(hasha.fromFile(fileName, {algorithm: 'sha256'})).then(function (hash) {
     var result = checksum == hash
     if (result) {
       console.log('Verified checksum of previously downloaded file')
