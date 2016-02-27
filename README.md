@@ -177,7 +177,7 @@ was not able to download the PhantomJS binary for your platform. Please try agai
 Do you live in China, or a country with an authoritarian government? We've seen problems where
 the GFW or local ISP blocks bitbucket, preventing the installer from downloading the binary.
 
-Try visiting the [the download page](http://cdn.bitbucket.org/ariya/phantomjs/downloads) manually.
+Try visiting [the download page](http://cdn.bitbucket.org/ariya/phantomjs/downloads) manually.
 If that page is blocked, you can try using a different CDN with the `PHANTOMJS_CDNURL`
 env variable described above.
 
