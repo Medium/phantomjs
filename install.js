@@ -358,17 +358,18 @@ function tryPhantomjsOnPath() {
   return kew.nfcall(which, 'phantomjs')
   .then(function (result) {
     phantomPath = result
+    console.log('Considering PhantomJS found at', phantomPath)
 
     // Horrible hack to avoid problems during global install. We check to see if
     // the file `which` found is our own bin script.
     if (phantomPath.indexOf(path.join('npm', 'phantomjs')) !== -1) {
-      console.log('Looks like an `npm install -g` on windows; unable to check for already installed version.')
+      console.log('Looks like an `npm install -g` on windows; skipping installed version.')
       return
     }
 
     var contents = fs.readFileSync(phantomPath, 'utf8')
     if (/NPM_INSTALL_MARKER/.test(contents)) {
-      console.log('Looks like an `npm install -g`; unable to check for already installed version.')
+      console.log('Looks like an `npm install -g`; skipping installed version.')
     } else {
       return checkPhantomjsVersion(phantomPath).then(function (matches) {
         if (matches) {
