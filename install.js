@@ -205,6 +205,7 @@ function getRequestOptions() {
     options.agentOptions = {
       ca: ca
     }
+    options.ca = ca
   }
 
   return options
