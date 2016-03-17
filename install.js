@@ -8,7 +8,7 @@
 
 var requestProgress = require('request-progress')
 var progress = require('progress')
-var ExtractZip = require('extract-zip')
+var extractZip = require('extract-zip')
 var cp = require('child_process')
 var fs = require('fs-extra')
 var hasha = require('hasha')
@@ -285,7 +285,7 @@ function extractDownload(filePath) {
 
   if (filePath.substr(-4) === '.zip') {
     console.log('Extracting zip contents')
-    ExtractZip(path.resolve(filePath), {dir: extractedPath}, function(err) {
+    extractZip(path.resolve(filePath), {dir: extractedPath}, function(err) {
       if (err) {
         console.error('Error extracting zip')
         deferred.reject(err)
