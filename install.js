@@ -8,7 +8,7 @@
 
 var requestProgress = require('request-progress')
 var progress = require('progress')
-var AdmZip = require('adm-zip')
+var ExtractZip = require('extract-zip')
 var cp = require('child_process')
 var fs = require('fs-extra')
 var hasha = require('hasha')
@@ -285,15 +285,14 @@ function extractDownload(filePath) {
 
   if (filePath.substr(-4) === '.zip') {
     console.log('Extracting zip contents')
-
-    try {
-      var zip = new AdmZip(filePath)
-      zip.extractAllTo(extractedPath, true)
-      deferred.resolve(extractedPath)
-    } catch (err) {
-      console.error('Error extracting zip')
-      deferred.reject(err)
-    }
+    ExtractZip(path.resolve(filePath), {dir: extractedPath}, function(err) {
+      if (err) {
+        console.error('Error extracting zip')
+        deferred.reject(err)
+      } else {
+        deferred.resolve(extractedPath)
+      }
+    })
 
   } else {
     console.log('Extracting tar contents (via spawned process)')
