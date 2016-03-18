@@ -39,7 +39,7 @@
     "test": "nodeunit --reporter=minimal test/tests.js && eslint install.js"
   },
   "dependencies": {
-    "adm-zip": "~0.4.7",
+    "extract-zip": "~1.5.0",
     "fs-extra": "~0.26.4",
     "hasha": "^2.2.0",
     "kew": "~0.7.0",
