@@ -6,7 +6,9 @@
 var childProcess = require('child_process')
 var fs = require('fs')
 var path = require('path')
+var location = require('../lib/location')
 var phantomjs = require('../lib/phantomjs')
+var util = require('../lib/util')
 
 
 exports.testDownload = function (test) {
@@ -44,7 +46,7 @@ exports.testPhantomExitCode = function (test) {
 exports.testBinFile = function (test) {
   test.expect(1)
 
-  var binPath = process.platform === 'win32' ? 
+  var binPath = process.platform === 'win32' ?
       path.join(__dirname, '..', 'lib', 'phantom', 'phantomjs.exe') :
       path.join(__dirname, '..', 'bin', 'phantomjs')
 
@@ -63,4 +65,37 @@ exports.testCleanPath = function (test) {
   test.equal('', phantomjs.cleanPath('./bin'))
   test.equal('/Work/bin:/usr/bin', phantomjs.cleanPath('/Work/bin:/Work/phantomjs/node_modules/.bin:/usr/bin'))
   test.done()
+}
+
+exports.testBogusReinstallLocation = function (test) {
+  util.maybeLinkLibModule('./blargh')
+  .then(function (success) {
+    test.ok(!success, 'Expected link to fail')
+    test.done()
+  })
+}
+
+exports.testSuccessfulReinstallLocation = function (test) {
+  util.maybeLinkLibModule(path.resolve(__dirname, '../lib/location'))
+  .then(function (success) {
+    test.ok(success, 'Expected link to succeed')
+    test.done()
+  })
+}
+
+exports.testBogusVerifyChecksum = function (test) {
+  util.verifyChecksum(path.resolve(__dirname, './exit.js'), 'blargh')
+  .then(function (success) {
+    test.ok(!success, 'Expected checksum to fail')
+    test.done()
+  })
+}
+
+exports.testSuccessfulVerifyChecksum = function (test) {
+  util.verifyChecksum(path.resolve(__dirname, './exit.js'),
+                      '217b7bccebefe5f5e267162060660b03de577867b6123ecfd3b26b5c6af2e92b')
+  .then(function (success) {
+    test.ok(success, 'Expected checksum to succeed')
+    test.done()
+  })
 }
