@@ -20,6 +20,7 @@ var url = require('url')
 var which = require('which')
 
 var originalPath = process.env.PATH
+var DEFAULT_CDN = 'https://github.com/Medium/phantomjs/releases/download/v2.1.1/'
 
 // If the process exits without going through exit(), then we did not complete.
 var validExit = false
@@ -428,7 +429,7 @@ function getDownloadUrl() {
 function getDownloadSpec() {
   var cdnUrl = process.env.npm_config_phantomjs_cdnurl ||
       process.env.PHANTOMJS_CDNURL ||
-      'https://bitbucket.org/ariya/phantomjs/downloads'
+      DEFAULT_CDN
   var downloadUrl = cdnUrl + '/phantomjs-' + helper.version + '-'
   var checksum = ''
 
