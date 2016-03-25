@@ -71,28 +71,30 @@ the request of PhantomJS team.
 Deciding Where To Get PhantomJS
 -------------------------------
 
-By default, this package will download phantomjs from `https://bitbucket.org/ariya/phantomjs/downloads`.
+By default, this package will download phantomjs from our [releases](https://github.com/Medium/phantomjs/releases/).
 This should work fine for most people.
 
 ##### Downloading from a custom URL
 
-If bitbucket is down, or the Great Firewall is blocking bitbucket, you may need to use
-a download mirror. To set a mirror, set npm config property `phantomjs_cdnurl`.
-Default is ``.
+If github is down, or the Great Firewall is blocking github, you may need to use
+a different download mirror. To set a mirror, set npm config property `phantomjs_cdnurl`.
 
-```shell
-npm install phantomjs-prebuilt --phantomjs_cdnurl=http://cnpmjs.org/downloads
+Alternatives include `https://bitbucket.org/ariya/phantomjs/downloads` (the official download site)
+and `http://cnpmjs.org/downloads`.
+
+```Shell
+npm install phantomjs-prebuilt --phantomjs_cdnurl=https://bitbucket.org/ariya/phantomjs/downloads
 ```
 
 Or add property into your `.npmrc` file (https://www.npmjs.org/doc/files/npmrc.html)
 
 ```
-phantomjs_cdnurl=http://cnpmjs.org/downloads
+phantomjs_cdnurl=https://bitbucket.org/ariya/phantomjs/downloads
 ```
 
 Another option is to use PATH variable `PHANTOMJS_CDNURL`.
 ```shell
-PHANTOMJS_CDNURL=http://cnpmjs.org/downloads npm install phantomjs
+PHANTOMJS_CDNURL=https://bitbucket.org/ariya/phantomjs/downloads npm install phantomjs
 ```
 
 ##### Using PhantomJS from disk
@@ -175,9 +177,9 @@ was not able to download the PhantomJS binary for your platform. Please try agai
 ##### I tried again, but I get `ECONNRESET` or `ETIMEDOUT` consistently.
 
 Do you live in China, or a country with an authoritarian government? We've seen problems where
-the GFW or local ISP blocks bitbucket, preventing the installer from downloading the binary.
+the GFW or local ISP blocks github, preventing the installer from downloading the binary.
 
-Try visiting [the download page](http://cdn.bitbucket.org/ariya/phantomjs/downloads) manually.
+Try visiting [the download page](https://bitbucket.org/ariya/phantomjs/downloads) manually.
 If that page is blocked, you can try using a different CDN with the `PHANTOMJS_CDNURL`
 env variable described above.
 
