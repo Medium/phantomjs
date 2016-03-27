@@ -34,7 +34,7 @@ cp.on('exit', function(code){
   setTimeout(function(){
     process.exit(code)
   }, 20)
-});
+})
 
 process.on('SIGTERM', function() {
   cp.kill('SIGTERM')
