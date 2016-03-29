@@ -10,6 +10,7 @@ var requestProgress = require('request-progress')
 var progress = require('progress')
 var extractZip = require('extract-zip')
 var cp = require('child_process')
+var os = require('os')
 var fs = require('fs-extra')
 var helper = require('./lib/phantomjs')
 var kew = require('kew')
@@ -104,7 +105,7 @@ function exit(code) {
 function findSuitableTempDirectory() {
   var now = Date.now()
   var candidateTmpDirs = [
-    process.env.TMPDIR || process.env.TEMP || process.env.npm_config_tmp,
+    os.tmpdir(),
     '/tmp',
     path.join(process.cwd(), 'tmp')
   ]
