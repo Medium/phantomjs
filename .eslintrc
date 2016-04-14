@@ -15,7 +15,8 @@
         ]
     },
     "env": {
-        "node": true
+        "node": true,
+        "phantomjs": true
     },
     "extends": "eslint:recommended"
 }
