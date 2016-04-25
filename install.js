@@ -20,7 +20,7 @@ var url = require('url')
 var which = require('which')
 
 var originalPath = process.env.PATH
-var DEFAULT_CDN = 'https://github.com/Medium/phantomjs/releases/download/v1.9.19'
+var DEFAULT_CDN = 'https://github.com/Medium/phantomjs/releases/download/v1.9.15'
 
 // If the process exits without going through exit(), then we did not complete.
 var validExit = false
@@ -437,16 +437,16 @@ function getDownloadSpec() {
   var arch = getTargetArch()
   if (platform === 'linux' && arch === 'x64') {
     downloadUrl += 'linux-x86_64.tar.bz2'
-    checksum = 'a1d9628118e270f26c4ddd1d7f3502a93b48ede334b8585d11c1c3ae7bc7163a'
+    checksum = '5416ecd246512da72284cbfe5bef593b628d2c875f6851439458cc541e13a0c2'
   } else if (platform === 'linux' && arch == 'ia32') {
     downloadUrl += 'linux-i686.tar.bz2'
-    checksum = '4102450bb658157e9aef3e229828fade0aaa0de0663802b31a0edff4b5aedf85'
+    checksum = '56674ae62bae372251a985389cde8b42c763c954c5a16cea00cbce6e8fafcdad'
   } else if (platform === 'darwin' || platform === 'openbsd' || platform === 'freebsd') {
     downloadUrl += 'macosx.zip'
-    checksum = '8f15043ae3031815dc5f884ea6ffa053d365491b1bc0dc3a0862d5ff1ac20a48'
+    checksum = '8f36ad645b8969915bb2a2c07adf87124f731ca97c8e1525a7df3a489fa0c896'
   } else if (platform === 'win32') {
     downloadUrl += 'windows.zip'
-    checksum = 'da36853ece7d58b6f50813d3e598d8a16bb191b467ac32e1624a239a49de9104'
+    checksum = '50a6f7f3a0bba8c9b18036bf33bbda01429fddd3fcae4a133f473358ae74cd2e'
   } else {
     return null
   }
