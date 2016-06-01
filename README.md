@@ -132,7 +132,7 @@ PhantomJS is not a library for NodeJS.  It's a separate environment and code
 written for node is unlikely to be compatible.  In particular PhantomJS does
 not expose a Common JS package loader.
 
-This is an _NPM wrapper_ and can be used to conveniently make Phantom available
+This is an _NPM wrapper_ and can be used to conveniently make Phantom available.
 It is not a Node JS wrapper.
 
 I have had reasonable experiences writing standalone Phantom scripts which I
