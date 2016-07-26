@@ -20,8 +20,6 @@ var util = require('./lib/util')
 var which = require('which')
 var os = require('os')
 
-console.log('NPM ', process.env.npm_config_tmp)
-
 var originalPath = process.env.PATH
 
 var checkPhantomjsVersion = util.checkPhantomjsVersion
@@ -29,7 +27,7 @@ var getTargetPlatform = util.getTargetPlatform
 var getTargetArch = util.getTargetArch
 var getDownloadSpec = util.getDownloadSpec
 var maybeLinkLibModule = util.maybeLinkLibModule
-var verifyChecksum = util.verifyCheckum
+var verifyChecksum = util.verifyChecksum
 var writeLocationFile = util.writeLocationFile
 
 // If the process exits without going through exit(), then we did not complete.
