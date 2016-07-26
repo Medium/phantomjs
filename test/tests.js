@@ -6,7 +6,6 @@
 var childProcess = require('child_process')
 var fs = require('fs')
 var path = require('path')
-var location = require('../lib/location')
 var phantomjs = require('../lib/phantomjs')
 var util = require('../lib/util')
 
@@ -26,7 +25,7 @@ exports.testPhantomExecutesTestScript = function (test) {
     'http://www.google.com/'
   ]
 
-  childProcess.execFile(phantomjs.path, childArgs, function (err, stdout, stderr) {
+  childProcess.execFile(phantomjs.path, childArgs, function (err, stdout) {
     var value = (stdout.indexOf('msec') !== -1)
     test.ok(value, 'Test script should have executed and returned run time')
     test.done()
@@ -36,7 +35,7 @@ exports.testPhantomExecutesTestScript = function (test) {
 
 exports.testPhantomExitCode = function (test) {
   test.expect(1)
-  childProcess.execFile(phantomjs.path, [path.join(__dirname, 'exit.js')], function (err, stdout, stderr) {
+  childProcess.execFile(phantomjs.path, [path.join(__dirname, 'exit.js')], function (err) {
     test.equals(err.code, 123, 'Exit code should be returned from phantom script')
     test.done()
   })
@@ -50,7 +49,7 @@ exports.testBinFile = function (test) {
       path.join(__dirname, '..', 'lib', 'phantom', 'phantomjs.exe') :
       path.join(__dirname, '..', 'bin', 'phantomjs')
 
-  childProcess.execFile(binPath, ['--version'], function (err, stdout, stderr) {
+  childProcess.execFile(binPath, ['--version'], function (err, stdout) {
     test.equal(phantomjs.version, stdout.trim(), 'Version should be match')
     test.done()
   })
