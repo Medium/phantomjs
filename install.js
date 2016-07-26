@@ -18,6 +18,9 @@ var request = require('request')
 var url = require('url')
 var util = require('./lib/util')
 var which = require('which')
+var os = require('os')
+
+console.log('NPM ', process.env.npm_config_tmp)
 
 var originalPath = process.env.PATH
 
@@ -104,15 +107,17 @@ function exit(code) {
 function findSuitableTempDirectory() {
   var now = Date.now()
   var candidateTmpDirs = [
-    process.env.TMPDIR || process.env.TEMP || process.env.npm_config_tmp,
-    '/tmp',
+    process.env.npm_config_tmp,
+    os.tmpdir(),
     path.join(process.cwd(), 'tmp')
   ]
 
   for (var i = 0; i < candidateTmpDirs.length; i++) {
-    var candidatePath = path.join(candidateTmpDirs[i], 'phantomjs')
+    var candidatePath = candidateTmpDirs[i]
+    if (!candidatePath) continue
 
     try {
+      candidatePath = path.join(path.resolve(candidatePath), 'phantomjs')
       fs.mkdirsSync(candidatePath, '0777')
       // Make double sure we have 0777 permissions; some operating systems
       // default umask does not allow write by default.
@@ -127,7 +132,7 @@ function findSuitableTempDirectory() {
   }
 
   console.error('Can not find a writable tmp directory, please report issue ' +
-      'on https://github.com/Obvious/phantomjs/issues/59 with as much ' +
+      'on https://github.com/Medium/phantomjs/issues with as much ' +
       'information as possible.')
   exit(1)
 }
