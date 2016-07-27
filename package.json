@@ -51,5 +51,15 @@
   "devDependencies": {
     "eslint": "2.7.0",
     "nodeunit": "0.9.1"
-  }
+  },
+  "bundledDependencies": [
+    "extract-zip",
+    "fs-extra",
+    "hasha",
+    "kew",
+    "progress",
+    "request",
+    "request-progress",
+    "which"
+  ]
 }
