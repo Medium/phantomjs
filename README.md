@@ -57,6 +57,40 @@ childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
 
 ```
 
+Or `exec()` method is also provided for convenience:
+
+```javascript
+var phantomjs = require('phantomjs-prebuilt')
+var program = phantomjs.exec('phantomjs-script.js', 'arg1', 'arg2')
+program.stdout.pipe(process.stdout)
+program.stderr.pipe(process.stderr)
+program.on('exit', code => {
+  // do something on end
+})
+```
+
+Note: [childProcess.spawn()](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options) is called inside `exec()`.
+
+Running with WebDriver
+----------------------
+
+`run()` method detects when PhantomJS gets ready. It's handy to use with WebDriver (Selenium).
+
+```javascript
+var phantomjs = require('phantomjs-prebuilt')
+var webdriverio = require('webdriverio')
+var wdOpts = { desiredCapabilities: { browserName: 'phantomjs' } }
+
+phantomjs.run('--webdriver=4444').then(program => {
+  webdriverio.remote(wdOpts).init()
+    .url('https://developer.mozilla.org/en-US/')
+    .getTitle().then(title => {
+      console.log(title) // 'Mozilla Developer Network'
+      program.kill() // quits PhantomJS
+    })
+})
+```
+
 Versioning
 ----------
 
@@ -185,7 +219,7 @@ env variable described above.
 
 ##### I am behind a corporate proxy that uses self-signed SSL certificates to intercept encrypted traffic.
 
-You can tell NPM and the PhantomJS installer to skip validation of ssl keys with NPM's 
+You can tell NPM and the PhantomJS installer to skip validation of ssl keys with NPM's
 [strict-ssl](https://www.npmjs.org/doc/misc/npm-config.html#strict-ssl) setting:
 
 ```
@@ -205,7 +239,7 @@ use the manually-installed binaries.
 Some Linux distros tried to rename `node` to `nodejs` due to a package
 conflict. This is a non-portable change, and we do not try to support this. The
 [official documentation](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint-elementary-os)
-recommends that you run `apt-get install nodejs-legacy` to symlink `node` to `nodejs` 
+recommends that you run `apt-get install nodejs-legacy` to symlink `node` to `nodejs`
 on those platforms, or many NodeJS programs won't work properly.
 
 Contributing
