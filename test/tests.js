@@ -123,3 +123,14 @@ exports.testPhantomRun = function (test) {
       })
   })
 }
+
+exports.testPhantomRunError = function (test) {
+  test.expect(1)
+  phantomjs.run('--bogus').then(function () {
+    test.ok(false, 'Expected not to start')
+    test.done()
+  }, function (err) {
+    test.equal('Error: Unknown option: bogus\n', err.message)
+    test.done()
+  })
+}
