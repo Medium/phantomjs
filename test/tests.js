@@ -68,8 +68,8 @@ exports.testCleanPath = function (test) {
 
 exports.testBogusReinstallLocation = function (test) {
   util.findValidPhantomJsBinary('./blargh')
-  .then(function (success) {
-    test.ok(!success, 'Expected link to fail')
+  .then(function (binaryLocation) {
+    test.ok(!binaryLocation, 'Expected link to fail')
     test.done()
   })
 }
@@ -84,8 +84,8 @@ exports.testSuccessfulReinstallLocation = function (test) {
 
 exports.testBogusVerifyChecksum = function (test) {
   util.verifyChecksum(path.resolve(__dirname, './exit.js'), 'blargh')
-  .then(function (binaryLocation) {
-    test.ok(!binaryLocation, 'Expected checksum to fail')
+  .then(function (success) {
+    test.ok(!success, 'Expected checksum to fail')
     test.done()
   })
 }
