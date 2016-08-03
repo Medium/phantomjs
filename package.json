@@ -39,6 +39,7 @@
     "test": "nodeunit --reporter=minimal test/tests.js && eslint ."
   },
   "dependencies": {
+    "es6-promise": "^3.2.1",
     "extract-zip": "~1.5.0",
     "fs-extra": "~0.30.0",
     "hasha": "^2.2.0",
@@ -50,7 +51,8 @@
   },
   "devDependencies": {
     "eslint": "2.7.0",
-    "nodeunit": "0.9.1"
+    "nodeunit": "0.9.1",
+    "webdriverio": "^4.2.3"
   },
   "bundledDependencies": [
     "extract-zip",

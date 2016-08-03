@@ -6,9 +6,9 @@
 var childProcess = require('child_process')
 var fs = require('fs')
 var path = require('path')
+var webdriverio = require('webdriverio')
 var phantomjs = require('../lib/phantomjs')
 var util = require('../lib/util')
-
 
 exports.testDownload = function (test) {
   test.expect(1)
@@ -96,5 +96,30 @@ exports.testSuccessfulVerifyChecksum = function (test) {
   .then(function (success) {
     test.ok(success, 'Expected checksum to succeed')
     test.done()
+  })
+}
+
+exports.testPhantomExec = function (test) {
+  test.expect(1)
+  var p = phantomjs.exec(path.join(__dirname, 'exit.js'))
+  p.on('exit', function (code) {
+    test.equals(code, 123, 'Exit code should be returned from phantom script')
+    test.done()
+  })
+}
+
+exports.testPhantomRun = function (test) {
+  test.expect(1)
+  var wdOpts = { desiredCapabilities: { browserName: 'phantomjs' } }
+  phantomjs.run('--webdriver=4444').then(function (p) {
+    webdriverio.remote(wdOpts).init()
+      .url('https://developer.mozilla.org/en-US/')
+      .getTitle().then(function (title) {
+        test.equals(title, 'Mozilla Developer Network', 'Page title')
+      })
+      .then(function () {
+        p.kill()
+        test.done()
+      })
   })
 }
