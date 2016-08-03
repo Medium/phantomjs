@@ -26,7 +26,7 @@ var checkPhantomjsVersion = util.checkPhantomjsVersion
 var getTargetPlatform = util.getTargetPlatform
 var getTargetArch = util.getTargetArch
 var getDownloadSpec = util.getDownloadSpec
-var maybeLinkLibModule = util.maybeLinkLibModule
+var findValidPhantomJsBinary = util.findValidPhantomJsBinary
 var verifyChecksum = util.verifyChecksum
 var writeLocationFile = util.writeLocationFile
 
@@ -322,9 +322,12 @@ function copyIntoPlace(extractedPath, targetPath) {
  */
 function tryPhantomjsInLib() {
   return kew.fcall(function () {
-    return maybeLinkLibModule(path.resolve(__dirname, './lib/location.js'))
-  }).then(function (success) {
-    if (success) exit(0)
+    return findValidPhantomJsBinary(path.resolve(__dirname, './lib/location.js'))
+  }).then(function (binaryLocation) {
+    if (binaryLocation) {
+      console.log('PhantomJS is previously installed at', binaryLocation)
+      exit(0)
+    }
   }).fail(function () {
     // silently swallow any errors
   })
@@ -356,9 +359,14 @@ function tryPhantomjsOnPath() {
     if (/NPM_INSTALL_MARKER/.test(contents)) {
       console.log('Looks like an `npm install -g`')
 
-      return maybeLinkLibModule(path.resolve(fs.realpathSync(phantomPath), '../../lib/location'))
-      .then(function (success) {
-        if (success) exit(0)
+      var phantomLibPath = path.resolve(fs.realpathSync(phantomPath), '../../lib/location')
+      return findValidPhantomJsBinary(phantomLibPath)
+      .then(function (binaryLocation) {
+        if (binaryLocation) {
+          writeLocationFile(binaryLocation)
+          console.log('PhantomJS linked at', phantomLibPath)
+          exit(0)
+        }
         console.log('Could not link global install, skipping...')
       })
     } else {

@@ -67,7 +67,7 @@ exports.testCleanPath = function (test) {
 }
 
 exports.testBogusReinstallLocation = function (test) {
-  util.maybeLinkLibModule('./blargh')
+  util.findValidPhantomJsBinary('./blargh')
   .then(function (success) {
     test.ok(!success, 'Expected link to fail')
     test.done()
@@ -75,17 +75,17 @@ exports.testBogusReinstallLocation = function (test) {
 }
 
 exports.testSuccessfulReinstallLocation = function (test) {
-  util.maybeLinkLibModule(path.resolve(__dirname, '../lib/location'))
-  .then(function (success) {
-    test.ok(success, 'Expected link to succeed')
+  util.findValidPhantomJsBinary(path.resolve(__dirname, '../lib/location'))
+  .then(function (binaryLocation) {
+    test.ok(binaryLocation, 'Expected link to succeed')
     test.done()
   })
 }
 
 exports.testBogusVerifyChecksum = function (test) {
   util.verifyChecksum(path.resolve(__dirname, './exit.js'), 'blargh')
-  .then(function (success) {
-    test.ok(!success, 'Expected checksum to fail')
+  .then(function (binaryLocation) {
+    test.ok(!binaryLocation, 'Expected checksum to fail')
     test.done()
   })
 }
