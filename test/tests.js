@@ -67,17 +67,17 @@ exports.testCleanPath = function (test) {
 }
 
 exports.testBogusReinstallLocation = function (test) {
-  util.maybeLinkLibModule('./blargh')
-  .then(function (success) {
-    test.ok(!success, 'Expected link to fail')
+  util.findValidPhantomJsBinary('./blargh')
+  .then(function (binaryLocation) {
+    test.ok(!binaryLocation, 'Expected link to fail')
     test.done()
   })
 }
 
 exports.testSuccessfulReinstallLocation = function (test) {
-  util.maybeLinkLibModule(path.resolve(__dirname, '../lib/location'))
-  .then(function (success) {
-    test.ok(success, 'Expected link to succeed')
+  util.findValidPhantomJsBinary(path.resolve(__dirname, '../lib/location'))
+  .then(function (binaryLocation) {
+    test.ok(binaryLocation, 'Expected link to succeed')
     test.done()
   })
 }
