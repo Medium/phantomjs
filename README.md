@@ -191,6 +191,7 @@ This is NPM's way of telling you that it was not able to start a process. It usu
 
 - `node` is not on your PATH, or otherwise not correctly installed.
 - `tar` is not on your PATH. This package expects `tar` on your PATH on Linux-based platforms.
+- `bzip2` is not on your PATH.
 
 Check your specific error message for more information.
 
