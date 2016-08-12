@@ -243,7 +243,7 @@ conflict. This is a non-portable change, and we do not try to support this. The
 recommends that you run `apt-get install nodejs-legacy` to symlink `node` to `nodejs`
 on those platforms, or many NodeJS programs won't work properly.
 
-##### I'm using an ARM processor (or other non-standard) chipset or unsupported version of Linux. I get errors about "Unexpected platform or architecture". What do I do?
+##### I'm using an unsupported version of Linux or an ARM processor. I get errors about "Unexpected platform or architecture". What do I do?
 
 We only have binaries available for common OS / processor configurations. Sorry.
 
