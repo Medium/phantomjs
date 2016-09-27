@@ -102,6 +102,32 @@ Pre-2.0, this package was published to NPM as [phantomjs](https://www.npmjs.com/
 We changed the name to [phantomjs-prebuilt](https://www.npmjs.com/package/phantomjs-prebuilt) at
 the request of PhantomJS team.
 
+Continuous Integration
+----------------------
+
+Please **do not** download PhantomJS for every CI job because it can quickly
+overload our CDNs. Instead take advantage of CI caching.
+
+In [Travis-CI](https://travis-ci.org/) add the following to your `.travis.yml`
+to [enable caching](https://docs.travis-ci.com/user/caching/) & avoid repeated
+downloads of PhantomJS.
+
+#### .travis.yml
+```yml
+cache:
+  directories:
+    - travis_phantomjs
+
+before_install:
+  # Upgrade PhantomJS to v2.1.1.
+  - "export PHANTOMJS_VERSION=2.1.1"
+  - "export PATH=$PWD/travis_phantomjs/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin:$PATH"
+  - "if [ $(phantomjs --version) != $PHANTOMJS_VERSION ]; then rm -rf $PWD/travis_phantomjs; mkdir -p $PWD/travis_phantomjs; fi"
+  - "if [ $(phantomjs --version) != $PHANTOMJS_VERSION ]; then wget https://github.com/Medium/phantomjs/releases/download/v$PHANTOMJS_VERSION/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -O $PWD/travis_phantomjs/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2; fi"
+  - "if [ $(phantomjs --version) != $PHANTOMJS_VERSION ]; then tar -xvf $PWD/travis_phantomjs/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -C $PWD/travis_phantomjs; fi"
+  - "phantomjs --version"
+```
+
 Deciding Where To Get PhantomJS
 -------------------------------
 
