@@ -39,7 +39,7 @@
     "test": "nodeunit --reporter=minimal test/tests.js && eslint ."
   },
   "dependencies": {
-    "es6-promise": "~3.2.1",
+    "es6-promise": "~4.0.3",
     "extract-zip": "~1.5.0",
     "fs-extra": "~0.30.0",
     "hasha": "~2.2.0",
