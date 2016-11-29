@@ -41,17 +41,17 @@
   "dependencies": {
     "es6-promise": "~4.0.3",
     "extract-zip": "~1.5.0",
-    "fs-extra": "~0.30.0",
+    "fs-extra": "~1.0.0",
     "hasha": "~2.2.0",
     "kew": "~0.7.0",
     "progress": "~1.1.8",
-    "request": "~2.74.0",
+    "request": "~2.79.0",
     "request-progress": "~2.0.1",
     "which": "~1.2.10"
   },
   "devDependencies": {
-    "eslint": "2.7.0",
-    "nodeunit": "0.9.1",
-    "webdriverio": "~4.2.3"
+    "eslint": "3.11.1",
+    "nodeunit": "0.10.2",
+    "webdriverio": "~4.4.0"
   }
 }
