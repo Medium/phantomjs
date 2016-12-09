@@ -50,8 +50,8 @@
     "which": "~1.2.10"
   },
   "devDependencies": {
-    "eslint": "2.7.0",
-    "nodeunit": "0.9.1",
-    "webdriverio": "~4.2.3"
+    "eslint": "3.11.1",
+    "nodeunit": "0.10.2",
+    "webdriverio": "~4.4.0"
   }
 }
