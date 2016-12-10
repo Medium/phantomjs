@@ -136,7 +136,7 @@ function findSuitableTempDirectory() {
 }
 
 
-function getRequestOptions() {
+function getRequestOptions(cdnURL) {
   var strictSSL = !!process.env.npm_config_strict_ssl
   if (process.version == 'v0.10.34') {
     console.log('Node v0.10.34 detected, turning off strict ssl due to https://github.com/joyent/node/issues/8894')
@@ -144,7 +144,7 @@ function getRequestOptions() {
   }
 
   var options = {
-    uri: getDownloadUrl(),
+    uri: getDownloadUrl(cdnURL),
     encoding: null, // Get response as a buffer
     followRedirect: true, // The default download path redirects to a CDN URL.
     headers: {},
@@ -205,15 +205,12 @@ function handleRequestError(error) {
   if (error && error.stack && error.stack.indexOf('SELF_SIGNED_CERT_IN_CHAIN') != -1) {
       console.error('Error making request, SELF_SIGNED_CERT_IN_CHAIN. ' +
           'Please read https://github.com/Medium/phantomjs#i-am-behind-a-corporate-proxy-that-uses-self-signed-ssl-certificates-to-intercept-encrypted-traffic')
-      exit(1)
   } else if (error) {
     console.error('Error making request.\n' + error.stack + '\n\n' +
         'Please report this full log at https://github.com/Medium/phantomjs')
-    exit(1)
   } else {
     console.error('Something unexpected happened, please report this full ' +
         'log at https://github.com/Medium/phantomjs')
-    exit(1)
   }
 }
 
@@ -232,17 +229,18 @@ function requestBinary(requestOptions, filePath) {
       fs.renameSync(writePath, filePath)
       deferred.resolve(filePath)
 
-    } else if (response) {
-      console.error('Error requesting archive.\n' +
-          'Status: ' + response.statusCode + '\n' +
-          'Request options: ' + JSON.stringify(requestOptions, null, 2) + '\n' +
-          'Response headers: ' + JSON.stringify(response.headers, null, 2) + '\n' +
-          'Make sure your network and proxy settings are correct.\n\n' +
-          'If you continue to have issues, please report this full log at ' +
-          'https://github.com/Medium/phantomjs')
-      exit(1)
     } else {
+      if (response) {
+        console.error('Error requesting archive.\n' +
+            'Status: ' + response.statusCode + '\n' +
+            'Request options: ' + JSON.stringify(requestOptions, null, 2) + '\n' +
+            'Response headers: ' + JSON.stringify(response.headers, null, 2) + '\n' +
+            'Make sure your network and proxy settings are correct.\n\n' +
+            'If you continue to have issues, please report this full log at ' +
+            'https://github.com/Medium/phantomjs')
+      }
       handleRequestError(error)
+      deferred.reject(error)
     }
   })).on('progress', function (state) {
     try {
@@ -391,8 +389,8 @@ function tryPhantomjsOnPath() {
  * @return {?string} Get the download URL for phantomjs.
  *     May return null if no download url exists.
  */
-function getDownloadUrl() {
-  var spec = getDownloadSpec()
+function getDownloadUrl(cdnURL) {
+  var spec = getDownloadSpec(cdnURL)
   return spec && spec.url
 }
 
@@ -402,37 +400,58 @@ function getDownloadUrl() {
  * @return {Promise.<string>} The path to the downloaded file.
  */
 function downloadPhantomjs() {
-  var downloadSpec = getDownloadSpec()
-  if (!downloadSpec) {
-    console.error(
-        'Unexpected platform or architecture: ' + getTargetPlatform() + '/' + getTargetArch() + '\n' +
-        'It seems there is no binary available for your platform/architecture\n' +
-        'Try to install PhantomJS globally')
-    exit(1)
+  var cdnURLs = [
+    process.env.npm_config_phantomjs_cdnurl,
+    process.env.PHANTOMJS_CDNURL,
+    'https://github.com/Medium/phantomjs/releases/download/v2.1.1',
+    'https://bitbucket.org/ariya/phantomjs/downloads',
+    'https://cnpmjs.org/downloads'
+  ].filter(Boolean)
+
+  function next () {
+    var cdnURL = cdnURLs.shift()
+    if (!cdnURL) {
+      console.error(
+          'Unable to download PhantomJS from any of the available\n ',
+          'official download sources.')
+      exit(1)
+    }
+
+    var downloadSpec = getDownloadSpec(cdnURL)
+    if (!downloadSpec) {
+      console.error(
+          'Unexpected platform or architecture: ' + getTargetPlatform() + '/' + getTargetArch() + '\n' +
+          'It seems there is no binary available for your platform/architecture\n' +
+          'Try to install PhantomJS globally')
+      exit(1)
+    }
+
+    var downloadUrl = downloadSpec.url
+    var downloadedFile
+
+    return kew.fcall(function () {
+      // Can't use a global version so start a download.
+      var tmpPath = findSuitableTempDirectory()
+      var fileName = downloadUrl.split('/').pop()
+      downloadedFile = path.join(tmpPath, fileName)
+
+      if (fs.existsSync(downloadedFile)) {
+        console.log('Download already available at', downloadedFile)
+        return verifyChecksum(downloadedFile, downloadSpec.checksum)
+      }
+      return false
+    }).then(function (verified) {
+      if (verified) {
+        return downloadedFile
+      }
+
+      // Start the install.
+      console.log('Downloading', downloadUrl)
+      console.log('Saving to', downloadedFile)
+      return requestBinary(getRequestOptions(cdnURL), downloadedFile)
+            .fail(next)
+    })
   }
 
-  var downloadUrl = downloadSpec.url
-  var downloadedFile
-
-  return kew.fcall(function () {
-    // Can't use a global version so start a download.
-    var tmpPath = findSuitableTempDirectory()
-    var fileName = downloadUrl.split('/').pop()
-    downloadedFile = path.join(tmpPath, fileName)
-
-    if (fs.existsSync(downloadedFile)) {
-      console.log('Download already available at', downloadedFile)
-      return verifyChecksum(downloadedFile, downloadSpec.checksum)
-    }
-    return false
-  }).then(function (verified) {
-    if (verified) {
-      return downloadedFile
-    }
-
-    // Start the install.
-    console.log('Downloading', downloadUrl)
-    console.log('Saving to', downloadedFile)
-    return requestBinary(getRequestOptions(), downloadedFile)
-  })
+  return next()
 }
