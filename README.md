@@ -119,8 +119,8 @@ cache:
     - travis_phantomjs
 
 before_install:
-  # Upgrade PhantomJS to v2.1.1.
-  - "export PHANTOMJS_VERSION=2.1.1"
+  # Upgrade PhantomJS to v2.5.0-beta.
+  - "export PHANTOMJS_VERSION=2.5.0-beta"
   - "export PATH=$PWD/travis_phantomjs/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin:$PATH"
   - "if [ $(phantomjs --version) != $PHANTOMJS_VERSION ]; then rm -rf $PWD/travis_phantomjs; mkdir -p $PWD/travis_phantomjs; fi"
   - "if [ $(phantomjs --version) != $PHANTOMJS_VERSION ]; then wget https://github.com/Medium/phantomjs/releases/download/v$PHANTOMJS_VERSION/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -O $PWD/travis_phantomjs/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2; fi"
