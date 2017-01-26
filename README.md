@@ -161,7 +161,7 @@ PHANTOMJS_CDNURL=https://bitbucket.org/ariya/phantomjs/downloads npm install pha
 
 If you plan to install phantomjs many times on a single machine, you can
 install the `phantomjs` binary on PATH. The installer will automatically detect
-and use that for non-global installs.
+and use that for non-global installs. A global npm installation of phantomjs-prebuilt will never be reused for local installs.
 
 Cross-Platform Repositories
 ---------------------------
