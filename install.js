@@ -151,23 +151,6 @@ function getRequestOptions() {
     strictSSL: strictSSL
   }
 
-  var proxyUrl = process.env.npm_config_https_proxy ||
-      process.env.npm_config_http_proxy ||
-      process.env.npm_config_proxy
-  if (proxyUrl) {
-
-    // Print using proxy
-    var proxy = url.parse(proxyUrl)
-    if (proxy.auth) {
-      // Mask password
-      proxy.auth = proxy.auth.replace(/:.*$/, ':******')
-    }
-    console.log('Using proxy ' + url.format(proxy))
-
-    // Enable proxy
-    options.proxy = proxyUrl
-  }
-
   // Use the user-agent string from the npm config
   options.headers['User-Agent'] = process.env.npm_config_user_agent
 
