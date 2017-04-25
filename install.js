@@ -153,7 +153,10 @@ function getRequestOptions() {
 
   var proxyUrl = process.env.npm_config_https_proxy ||
       process.env.npm_config_http_proxy ||
-      process.env.npm_config_proxy
+      process.env.npm_config_proxy ||
+      process.env.http_proxy;
+
+
   if (proxyUrl) {
 
     // Print using proxy
