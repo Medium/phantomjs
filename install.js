@@ -24,6 +24,7 @@ var originalPath = process.env.PATH
 
 var checkPhantomjsVersion = util.checkPhantomjsVersion
 var getTargetPlatform = util.getTargetPlatform
+var getTargetPlatformRelease = util.getTargetPlatformRelease
 var getTargetArch = util.getTargetArch
 var getDownloadSpec = util.getDownloadSpec
 var findValidPhantomJsBinary = util.findValidPhantomJsBinary
