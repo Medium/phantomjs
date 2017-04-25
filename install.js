@@ -408,7 +408,7 @@ function downloadPhantomjs() {
   var downloadSpec = getDownloadSpec()
   if (!downloadSpec) {
     console.error(
-        'Unexpected platform or architecture: ' + getTargetPlatform() + '/' + getTargetArch() + '\n' +
+        'Unexpected platform or architecture: ' + getTargetPlatform() + '/' + getTargetArch() + '/' + getTargetPlatformRelease() + '\n' +
         'It seems there is no binary available for your platform/architecture\n' +
         'Try to install PhantomJS globally')
     exit(1)
