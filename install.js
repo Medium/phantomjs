@@ -8,7 +8,7 @@
 
 var requestProgress = require('request-progress')
 var progress = require('progress')
-var extractZip = require('extract-zip')
+var decompress = require('decompress')
 var cp = require('child_process')
 var fs = require('fs-extra')
 var helper = require('./lib/phantomjs')
@@ -24,6 +24,7 @@ var originalPath = process.env.PATH
 
 var checkPhantomjsVersion = util.checkPhantomjsVersion
 var getTargetPlatform = util.getTargetPlatform
+var getTargetPlatformRelease = util.getTargetPlatformRelease
 var getTargetArch = util.getTargetArch
 var getDownloadSpec = util.getDownloadSpec
 var findValidPhantomJsBinary = util.findValidPhantomJsBinary
@@ -153,7 +154,10 @@ function getRequestOptions() {
 
   var proxyUrl = process.env.npm_config_https_proxy ||
       process.env.npm_config_http_proxy ||
-      process.env.npm_config_proxy
+      process.env.npm_config_proxy ||
+      process.env.http_proxy;
+
+
   if (proxyUrl) {
 
     // Print using proxy
@@ -266,35 +270,22 @@ function extractDownload(filePath) {
   // extract to a unique directory in case multiple processes are
   // installing and extracting at once
   var extractedPath = filePath + '-extract-' + Date.now()
-  var options = {cwd: extractedPath}
 
   fs.mkdirsSync(extractedPath, '0777')
   // Make double sure we have 0777 permissions; some operating systems
   // default umask does not allow write by default.
   fs.chmodSync(extractedPath, '0777')
 
-  if (filePath.substr(-4) === '.zip') {
-    console.log('Extracting zip contents')
-    extractZip(path.resolve(filePath), {dir: extractedPath}, function(err) {
-      if (err) {
-        console.error('Error extracting zip')
-        deferred.reject(err)
-      } else {
-        deferred.resolve(extractedPath)
-      }
-    })
+  console.log('Extracting archive')
+  decompress(path.resolve(filePath), extractedPath)
+    .then(function(files) {
+      deferred.resolve(extractedPath)
+    },
+    function(err) {
+      console.error('Error extracting zip')
+      deferred.reject(err)
+    });
 
-  } else {
-    console.log('Extracting tar contents (via spawned process)')
-    cp.execFile('tar', ['jxf', path.resolve(filePath)], options, function (err) {
-      if (err) {
-        console.error('Error extracting archive')
-        deferred.reject(err)
-      } else {
-        deferred.resolve(extractedPath)
-      }
-    })
-  }
   return deferred.promise
 }
 
@@ -405,7 +396,7 @@ function downloadPhantomjs() {
   var downloadSpec = getDownloadSpec()
   if (!downloadSpec) {
     console.error(
-        'Unexpected platform or architecture: ' + getTargetPlatform() + '/' + getTargetArch() + '\n' +
+        'Unexpected platform or architecture: ' + getTargetPlatform() + '/' + getTargetArch() + '/' + getTargetPlatformRelease() + '\n' +
         'It seems there is no binary available for your platform/architecture\n' +
         'Try to install PhantomJS globally')
     exit(1)
