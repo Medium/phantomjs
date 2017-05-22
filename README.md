@@ -61,7 +61,7 @@ Or `exec()` method is also provided for convenience:
 
 ```javascript
 var phantomjs = require('phantomjs-prebuilt')
-var program = phantomjs.exec('phantomjs-script.js', 'arg1', 'arg2')
+var program = phantomjs.exec(__dirname+'/phantomjs-script.js', 'arg1', 'arg2')
 program.stdout.pipe(process.stdout)
 program.stderr.pipe(process.stderr)
 program.on('exit', code => {
