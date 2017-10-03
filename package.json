@@ -1,6 +1,6 @@
 {
   "name": "phantomjs-prebuilt",
-  "version": "2.1.15",
+  "version": "2.1.16",
   "keywords": [
     "phantomjs",
     "headless",
@@ -39,15 +39,15 @@
     "test": "nodeunit --reporter=minimal test/tests.js && eslint ."
   },
   "dependencies": {
-    "es6-promise": "~4.0.3",
-    "extract-zip": "~1.6.5",
-    "fs-extra": "~1.0.0",
-    "hasha": "~2.2.0",
-    "kew": "~0.7.0",
-    "progress": "~1.1.8",
-    "request": "~2.81.0",
-    "request-progress": "~2.0.1",
-    "which": "~1.2.10"
+    "es6-promise": "^4.0.3",
+    "extract-zip": "^1.6.5",
+    "fs-extra": "^1.0.0",
+    "hasha": "^2.2.0",
+    "kew": "^0.7.0",
+    "progress": "^1.1.8",
+    "request": "^2.81.0",
+    "request-progress": "^2.0.1",
+    "which": "^1.2.10"
   },
   "devDependencies": {
     "eslint": "2.7.0",
