@@ -1,6 +1,8 @@
 phantomjs-prebuilt
 ==================
 
+**WARNING:** This repository and NPM package are now deprecated since PhantomJS development had been suspended.
+
 An NPM installer for [PhantomJS](http://phantomjs.org/), headless webkit with JS API.
 
 [![Build Status](https://travis-ci.org/Medium/phantomjs.svg?branch=master)](https://travis-ci.org/Medium/phantomjs)
