@@ -115,7 +115,7 @@ exports.testPhantomRun = function (test) {
     webdriverio.remote(wdOpts).init()
       .url('https://developer.mozilla.org/en-US/')
       .getTitle().then(function (title) {
-        test.equals(title, 'Mozilla Developer Network', 'Page title')
+        test.equals(title, 'MDN Web Docs', 'Page title')
       })
       .then(function () {
         p.kill()
