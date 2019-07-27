@@ -29,10 +29,10 @@ cp.on('error', function (err) {
   console.error(err.stack)
 })
 
-cp.on('exit', function(code){
+cp.on('exit', function(code, signal){
   // Wait few ms for error to be printed.
   setTimeout(function(){
-    process.exit(code)
+    process.exit(signal ? 1 : code)
   }, 20)
 });
 
