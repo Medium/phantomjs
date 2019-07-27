@@ -158,6 +158,12 @@ Another option is to use PATH variable `PHANTOMJS_CDNURL`.
 ```shell
 PHANTOMJS_CDNURL=https://bitbucket.org/ariya/phantomjs/downloads npm install phantomjs
 ```
+##### Install from mirror in China
+
+```shell
+npx mirror-config-china --registry=http://registry.npm.taobao.org
+npm install node-sass
+```
 
 ##### Using PhantomJS from disk
 
